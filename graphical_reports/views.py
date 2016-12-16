@@ -5,4 +5,4 @@ from django.http import HttpResponseRedirect,HttpResponse
 
 def home(request):
     table_data = []
-    return render_to_response('base.html', locals())
+    return render_to_response('chartManage.html', locals())
