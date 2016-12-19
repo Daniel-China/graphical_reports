@@ -10,4 +10,5 @@ urlpatterns = patterns('',
 
     # url(r'^admin/', include(admin.site.urls)),
     url(r'^$', 'graphical_reports.views.home', name='home'),
+    url(r'^GetChartType$', 'graphical_reports.views.GetChartType'),
 )

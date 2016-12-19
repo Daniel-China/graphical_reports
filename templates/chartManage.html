@@ -2,7 +2,7 @@
 
 {% block chart_models_content %}
 
-<div class="container">
+<div class="container" >
 	<div class="row clearfix">
 		<div class="col-md-6 column">
 			 <span class="label label-default">图表管理</span>
@@ -12,7 +12,7 @@
 	</div>
 	<div class="row clearfix">
 		<div class="col-md-3 col-sm-6 column">
-            <button type="button" class="btn btn-sm btn-block btn-primary" href="#modal-new-table" data-toggle="modal">新建图表</button>
+            <button type="button" class="btn btn-sm btn-block btn-primary" href="#modal-new-table" data-toggle="modal" onclick="addItems()" >新建图表</button>
 
         </div>
 
@@ -85,7 +85,11 @@
                          <label for="input-new-table-name">新表格名称</label><input type="text" class="form-control" id="input-new-table-name" />
                     </div>
                     <div class="form-group">
-                         <label for="input-new-table-type">选择表格类型</label><input type="password" class="form-control" id="exampleInputPassword1" />
+                         <label for="input-new-table-type">选择表格类型</label>
+{#                         <div id="bgDiv" style="display:none;"></div>#}
+{#                        <a  class="btn-lit" href="javascript:"  onclick="bgDiv.style.display='inline';advancedQuery.style.display='';addItems()"><span>高级查询</span></a>#}
+                        <select  id="input-new-table-type"  >
+                        </select>
                     </div>
                     <div class="form-group">
                          <label for="exampleInputFile">File input</label><input type="file" id="exampleInputFile" />
@@ -144,5 +148,30 @@
     </div>
 </div>
 
+<script type="text/javascript">
+//动态绑定下拉框项
+        function addItems() {
+            $.ajax({
+                url: "GetChartType",    //后台webservice里的方法名称
+                type: "post",
+                dataType: "json",
+                contentType: "application/json",
+                traditional: true,
+                success: function (data) {
+
+                        var optionstring = "";
+                        for (var j = 0; j < data.length; j++) {
+                            optionstring += "<option value=\"" + data[j]["value"] + "\" >" + data[j]["display"] + "</option>";
+                        }
+                        $("#input-new-table-type").html(optionstring);
+
+                },
+                error: function (msg) {
+                    alert("出错了！");
+                }
+            });
+        };
+
+</script>
 
 {% endblock chart_models_content %}
