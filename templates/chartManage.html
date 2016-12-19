@@ -82,21 +82,27 @@
             <div class="modal-body">
                 <form role="form">
                     <div class="form-group">
-                         <label for="input-new-table-name">新表格名称</label><input type="text" class="form-control" id="input-new-table-name" />
+                        <label for="input-new-table-name">新表格名称</label>
+                        <input type="text" class="form-control" id="input-new-table-name" maxlength="40" />
                     </div>
+
                     <div class="form-group">
-                         <label for="input-new-table-type">选择表格类型</label>
-{#                         <div id="bgDiv" style="display:none;"></div>#}
-{#                        <a  class="btn-lit" href="javascript:"  onclick="bgDiv.style.display='inline';advancedQuery.style.display='';addItems()"><span>高级查询</span></a>#}
+                        <label for="input-new-table-type">选择图表类型</label>
                         <select  id="input-new-table-type"  >
                         </select>
                     </div>
+
                     <div class="form-group">
-                         <label for="exampleInputFile">File input</label><input type="file" id="exampleInputFile" />
-                        <p class="help-block">
-                            Example block-level help text here.
-                        </p>
+                        <label for="input-new-table-theme">选择图表主题风格</label>
+                        <select  id="input-new-table-theme" >
+                        </select>
                     </div>
+                    <div class="form-group">
+                        <label for="input-new-table-group">选择加入的分组</label>
+                        <select  id="input-new-table-group" >
+                        </select>
+                    </div>
+
                     <div class="checkbox">
                          <label><input type="checkbox" />Check me out</label>
                     </div> <button type="submit" class="btn btn-default">Submit</button>
@@ -152,6 +158,41 @@
 //动态绑定下拉框项
         function addItems() {
             $.ajax({
+                url: "GetNewChartOption",    //后台webservice里的方法名称
+                type: "post",
+                dataType: "json",
+                contentType: "application/json",
+                traditional: true,
+                success: function (data) {
+
+                        var optionstring = "";
+                        for (var j = 0; j < data.chart_type.length; j++) {
+                            optionstring += "<option value=\"" + data["chart_type"][j] + "\" >" + data["chart_type"][j] + "</option>";
+                        }
+                        $("#input-new-table-type").html(optionstring);
+                        optionstring = "";
+                        for (var j = 0; j < data.chart_group.length; j++) {
+                            optionstring += "<option value=\"" + data["chart_group"][j] + "\" >" + data["chart_group"][j] + "</option>";
+                        }
+                        $("#input-new-table-group").html(optionstring);
+                        optionstring = "";
+                        for (var j = 0; j < data.chart_theme.length; j++) {
+                            optionstring += "<option value=\"" + data["chart_theme"][j] + "\" >" + data["chart_theme"][j] + "</option>";
+                        }
+                        $("#input-new-table-theme").html(optionstring);
+
+                },
+                error: function (msg) {
+                    alert("出错了！");
+                }
+            });
+        };
+
+</script>
+    <script type="text/javascript">
+//动态绑定下拉框项
+        function addItem() {
+            $.ajax({
                 url: "GetChartType",    //后台webservice里的方法名称
                 type: "post",
                 dataType: "json",
@@ -163,7 +204,7 @@
                         for (var j = 0; j < data.length; j++) {
                             optionstring += "<option value=\"" + data[j]["value"] + "\" >" + data[j]["display"] + "</option>";
                         }
-                        $("#input-new-table-type").html(optionstring);
+                        $("#input-new-table-group").html(optionstring);
 
                 },
                 error: function (msg) {
