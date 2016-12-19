@@ -26,6 +26,8 @@ class ChartInfo(models.Model):
 class ChartGroup(models.Model):
     '''图表分组信息'''
     group_name = models.CharField(max_length=40, primary_key=True)
+    display_flag = models.CharField(max_length=10)
+    order_num = models.CharField(max_length=20)
 
 
 class ConfigOption(models.Model):
