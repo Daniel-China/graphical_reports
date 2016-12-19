@@ -80,7 +80,8 @@
                 </h4>
             </div>
             <div class="modal-body">
-                <form role="form" id="newTable">
+                <form role="form" method="post" id="newTable" href="/addNewChart">
+                    {% csrf_token %}
                     <div class="form-group">
                         <label for="input-new-table-name">新表格名称</label>
                         <input type="text" class="form-control" name="newTableName" id="input-new-table-name" maxlength="40" />
@@ -129,7 +130,7 @@
                 </h4>
             </div>
             <div class="modal-body">
-                <form role="form">
+                <form role="form" >
                     <div class="form-group">
                          <label for="exampleInputEmail1">Email address</label><input type="email" class="form-control" id="exampleInputEmail1" />
                     </div>
@@ -194,21 +195,25 @@
 
 <script type="text/javascript">
 //提交表单
-        function postForm(url,uuid) {
+function postForm(url,uuid) {
 
-            obj = "#"+uuid;
+            obj = "#"+ uuid;
             $.ajax({
                 url: url,
-                type: "post",
+                type: "get",
                 dataType: "json",
                 contentType: "application/json",
+                traditional: true,
                 data: $(obj).serialize(),
+{#                data: {#}
+{#                    "newTableName": "chisi"#}
+{#                },#}
                 success: function (data) {
-                    alert(data[0] + "提交成功！")
+                    alert(data + "提交成功！")
 
                 },
-                error: function (data) {
-                    alert(data[0] +"提交出错！");
+                error: function (msg) {
+                    alert("提交出错！");
                 }
             });
         };
