@@ -12,7 +12,7 @@
 	</div>
 	<div class="row clearfix">
 		<div class="col-md-3 col-sm-6 column">
-            <button type="button" class="btn btn-sm btn-block btn-primary" href="#modal-new-table" data-toggle="modal" onclick="addItems()" >新建图表</button>
+            <button type="button" class="btn btn-sm btn-block btn-primary" href="#modal-new-table" data-toggle="modal" onclick="getOptions()" >新建图表</button>
 
         </div>
 
@@ -80,26 +80,26 @@
                 </h4>
             </div>
             <div class="modal-body">
-                <form role="form">
+                <form role="form" id="newTable">
                     <div class="form-group">
                         <label for="input-new-table-name">新表格名称</label>
-                        <input type="text" class="form-control" id="input-new-table-name" maxlength="40" />
+                        <input type="text" class="form-control" name="newTableName" id="input-new-table-name" maxlength="40" />
                     </div>
 
                     <div class="form-group">
                         <label for="input-new-table-type">选择图表类型</label>
-                        <select  id="input-new-table-type"  >
+                        <select  id="input-new-table-type" name="newTableType"  >
                         </select>
                     </div>
 
                     <div class="form-group">
                         <label for="input-new-table-theme">选择图表主题风格</label>
-                        <select  id="input-new-table-theme" >
+                        <select  id="input-new-table-theme" name="newTableTheme" >
                         </select>
                     </div>
                     <div class="form-group">
                         <label for="input-new-table-group">选择加入的分组</label>
-                        <select  id="input-new-table-group" >
+                        <select  id="input-new-table-group" name="newTableGroup">
                         </select>
                     </div>
 
@@ -109,7 +109,7 @@
                 </form>
             </div>
             <div class="modal-footer">
-                 <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button> <button type="button" class="btn btn-primary">保存</button>
+                 <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button> <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="postForm('addNewChart', 'newTable')">保存</button>
             </div>
         </div>
     </div>
@@ -148,17 +148,18 @@
                 </form>
             </div>
             <div class="modal-footer">
-                 <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button> <button type="button" class="btn btn-primary">保存</button>
+                 <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button> <button type="button" class="btn btn-primary" >保存</button>
             </div>
         </div>
     </div>
 </div>
 
+
 <script type="text/javascript">
-//动态绑定下拉框项
-        function addItems() {
+//获取新增图表界面下拉框选项
+        function getOptions() {
             $.ajax({
-                url: "GetNewChartOption",    //后台webservice里的方法名称
+                url: "getNewChartOption",
                 type: "post",
                 dataType: "json",
                 contentType: "application/json",
@@ -189,26 +190,25 @@
         };
 
 </script>
-    <script type="text/javascript">
-//动态绑定下拉框项
-        function addItem() {
+
+
+<script type="text/javascript">
+//提交表单
+        function postForm(url,uuid) {
+
+            obj = "#"+uuid;
             $.ajax({
-                url: "GetChartType",    //后台webservice里的方法名称
+                url: url,
                 type: "post",
                 dataType: "json",
                 contentType: "application/json",
-                traditional: true,
+                data: $(obj).serialize(),
                 success: function (data) {
-
-                        var optionstring = "";
-                        for (var j = 0; j < data.length; j++) {
-                            optionstring += "<option value=\"" + data[j]["value"] + "\" >" + data[j]["display"] + "</option>";
-                        }
-                        $("#input-new-table-group").html(optionstring);
+                    alert(data[0] + "提交成功！")
 
                 },
-                error: function (msg) {
-                    alert("出错了！");
+                error: function (data) {
+                    alert(data[0] +"提交出错！");
                 }
             });
         };

@@ -10,5 +10,6 @@ urlpatterns = patterns('',
 
     # url(r'^admin/', include(admin.site.urls)),
     url(r'^$', 'graphical_reports.views.home', name='home'),
-    url(r'^GetNewChartOption$', 'graphical_reports.views.get_NewChartOption'),
+    url(r'^getNewChartOption$', 'graphical_reports.views.get_NewChartOption'),
+    url(r'^addNewChart$', 'graphical_reports.views.add_NewChart'),
 )
