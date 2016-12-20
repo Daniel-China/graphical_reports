@@ -22,10 +22,11 @@ class ChartInfo(models.Model):
     tooltip_config = models.TextField()
     toolbox_config = models.TextField()
     series_config = models.TextField()
+    preview_config = models.TextField()
 
 class ChartGroup(models.Model):
     '''图表分组信息'''
-    group_name = models.CharField(max_length=40, primary_key=True)
+    group_name = models.CharField(max_length=40)
     display_flag = models.CharField(max_length=10)
     order_num = models.CharField(max_length=20)
 

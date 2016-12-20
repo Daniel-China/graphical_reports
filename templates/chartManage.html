@@ -75,38 +75,52 @@
         <div class="modal-content">
             <div class="modal-header">
                  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                <h4 class="modal-title" id="myModalLabel">
+                <h4 class="modal-title" >
                     新增配置
                 </h4>
             </div>
             <div class="modal-body">
-                <form role="form" method="post" id="newTable" href="/addNewChart">
+                <form role="form" method="get" id="newTable" href="/addNewChart">
                     {% csrf_token %}
                     <div class="form-group">
-                        <label for="input-new-table-name">新表格名称</label>
-                        <input type="text" class="form-control" name="newTableName" id="input-new-table-name" maxlength="40" />
+                        <div>
+                            <label for="input-new-table-name" class="control-label">新表格名:</label>
+                        </div>
+                        <div>
+                            <input type="text"  name="newTableName" id="input-new-table-name"  maxlength="40" class="form-control" />
+                        </div>
                     </div>
 
                     <div class="form-group">
-                        <label for="input-new-table-type">选择图表类型</label>
-                        <select  id="input-new-table-type" name="newTableType"  >
-                        </select>
+                        <div >
+                            <label for="input-new-table-type">图表类型:</label>
+                        </div>
+                        <div >
+                            <select  id="input-new-table-type" name="newTableType" class="form-control" >
+                            </select>
+                        </div>
                     </div>
 
                     <div class="form-group">
-                        <label for="input-new-table-theme">选择图表主题风格</label>
-                        <select  id="input-new-table-theme" name="newTableTheme" >
-                        </select>
+                        <div >
+                            <label for="input-new-table-theme">主题风格:</label>
+                        </div>
+                        <div >
+                            <select  id="input-new-table-theme" name="newTableTheme" class="form-control">
+                            </select>
+                        </div>
                     </div>
                     <div class="form-group">
-                        <label for="input-new-table-group">选择加入的分组</label>
-                        <select  id="input-new-table-group" name="newTableGroup">
-                        </select>
+                        <div >
+                            <label for="input-new-table-group">选择加入的分组:</label>
+                        </div>
+                        <div >
+                            <select  id="input-new-table-group" name="newTableGroup" class="form-control">
+                            </select>
+                        </div>
                     </div>
 
-                    <div class="checkbox">
-                         <label><input type="checkbox" />Check me out</label>
-                    </div> <button type="submit" class="btn btn-default">Submit</button>
+
                 </form>
             </div>
             <div class="modal-footer">
@@ -130,26 +144,45 @@
                 </h4>
             </div>
             <div class="modal-body">
-                <form role="form" >
+                <form role="form" method="get" id="editTable" href="/editChart">
                     <div class="form-group">
-                         <label for="exampleInputEmail1">Email address</label><input type="email" class="form-control" id="exampleInputEmail1" />
+                        <div>
+                            <label for="edit-table-name" class="control-label">选择需要操作的表单:</label>
+                        </div>
+                        <div>
+                            <select  class="form-control" id="edit-table-name" name="TableName"  >
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div>
+                            <label for="input-legend-num">设定图列数量:</label>
+                        </div>
+                        <div>
+                            <input type="text" class="form-control" name="legend-num" id="input-legend-num"  value='1' />
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div>
+                            <label for="input-data-source">选择数据来源:</label>
+                        </div>
+                        <div>
+                            <select  class="form-control" id="input-data-source" name="DataSource" >
+                            </select>
+                        </div>
                     </div>
                     <div class="form-group">
-                         <label for="exampleInputPassword1">Password</label><input type="password" class="form-control" id="exampleInputPassword1" />
+                        <label for="download-temp">模版下载</label>
+
                     </div>
-                    <div class="form-group">
-                         <label for="exampleInputFile">File input</label><input type="file" id="exampleInputFile" />
-                        <p class="help-block">
-                            Example block-level help text here.
-                        </p>
-                    </div>
-                    <div class="checkbox">
-                         <label><input type="checkbox" />Check me out</label>
-                    </div> <button type="submit" class="btn btn-default">Submit</button>
+
+
                 </form>
             </div>
             <div class="modal-footer">
-                 <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button> <button type="button" class="btn btn-primary" >保存</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button> <button type="button" class="btn btn-primary" >保存</button>
             </div>
         </div>
     </div>
@@ -205,9 +238,6 @@ function postForm(url,uuid) {
                 contentType: "application/json",
                 traditional: true,
                 data: $(obj).serialize(),
-{#                data: {#}
-{#                    "newTableName": "chisi"#}
-{#                },#}
                 success: function (data) {
                     alert(data + "提交成功！")
 
