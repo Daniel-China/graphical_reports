@@ -4,5 +4,5 @@
 
 
 def new_table_create():
-
+    pass
 
