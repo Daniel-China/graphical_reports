@@ -6,7 +6,7 @@ from django.http import HttpResponseRedirect,HttpResponse
 from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
 from models import ChartGroup,ChartInfo,ConfigOption
-import json
+import json,MySQLdb,sqlite3
 
 def home(request):
     table_data = []
@@ -78,3 +78,25 @@ def edit_chart(request):
 
     return render_to_response('chartEdit.html', locals())
 
+@csrf_exempt
+def runSql(request):
+    if request.method == 'POST':
+        try:
+            host = request.POST.get("host")
+            port = request.POST.get("port")
+            db_name = request.POST.get("dbName")
+            db_sql = request.POST.get("dbSql")
+            conn = sqlite3.connect("db.sqlite3")
+            cu = conn.cursor()
+            cu.execute(db_sql)
+
+            print cu.fetchall()
+        except Exception,err:
+            print err
+    else:
+        pass
+
+
+
+
+    return render_to_response('test.html', locals())

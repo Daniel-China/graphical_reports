@@ -14,4 +14,5 @@ urlpatterns = patterns('',
     url(r'^getEditOption$', 'graphical_reports.views.get_EditOption'),
     url(r'^EditChart$', 'graphical_reports.views.edit_chart'),
     url(r'^addNewChart$', 'graphical_reports.views.add_NewChart'),
+    url(r'^runSql$', 'graphical_reports.views.runSql'),
 )
