@@ -28,6 +28,15 @@ def get_NewChartOption(request):
 
 
 @csrf_exempt
+def get_EditOption(request):
+    chart_name = []
+    for i in ChartInfo.objects.all():
+        chart_name.append(i.name)
+    edit_option = {'chart_name': chart_name}
+    return HttpResponse(json.dumps(edit_option), content_type="application/json")
+
+
+@csrf_exempt
 def add_NewChart(request):
     # if request.is_ajax() and request.method == 'POST':
     # print request.POST["newTableName"]
@@ -59,4 +68,13 @@ def new_table_create(request):
     except Exception,e:
         print e
     return new_table_config
+
+
+@csrf_exempt
+def edit_chart(request):
+    if request.method == 'POST':
+        chart_name = request.POST.get("TableName")
+
+
+    return render_to_response('chartEdit.html', locals())
 

@@ -1,0 +1,88 @@
+{% extends 'base_temp.html' %}
+
+{% block chart_models_content %}
+
+<div class="container">
+	<div class="row clearfix">
+		<div class="col-md-4 column">
+			 <span class="label label-default">编辑图表属性</span>
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title">
+						图表名称：
+					</h3>
+				</div>
+				<div class="panel-body">
+					{{ chart_name }}
+				</div>
+
+			</div>
+		</div>
+		<div class="col-md-8 column">
+		</div>
+	</div>
+	<div class="row clearfix">
+        <div class="col-sm-2 column ">
+            <span class="label label-warning">数据源设置</span>
+        </div>
+    </div>
+    <div class="row clearfix">
+		<div class="col-md-12 column">
+			<form class="form-horizontal" role="form">
+
+				<div class="form-group">
+					 <label for="inputHost" class="col-sm-2 control-label">源地址:</label>
+					<div class="col-sm-4">
+						<input type="text" class="form-control" id="inputHost" />
+					</div>
+
+					 <label for="inputPort" class="col-sm-2 control-label">端口号:</label>
+					<div class="col-sm-2">
+						<input type="text" class="form-control" id="inputPort" />
+					</div>
+				</div>
+				<div class="form-group">
+                    <label for="inputDBName" class="col-sm-2 control-label">数据库名:</label>
+					<div class="col-sm-4">
+						<input type="text" class="form-control" id="inputDBName" />
+					</div>
+
+				</div>
+				<div class="form-group">
+
+                    <label for="inputSql" class="col-sm-2 control-label">SQL语句:</label>
+                <div class="col-sm-8">
+                    <textarea id="inputSql" class="form-control"></textarea>
+				</div>
+                <div class="col-sm-offset-2 col-sm-8">
+                    <button type="button" class="btn btn-sm btn-primary" onclick="runSql()">执行测试</button>
+                </div>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+
+
+
+<script type="text/javascript">
+//获取新增图表界面下拉框选项
+function runSql() {
+    $.ajax({
+        url: "runSql",
+        type: "post",
+        dataType: "json",
+        contentType: "application/json",
+        traditional: true,
+        data: $(obj).serialize(),
+        success: function (data) {
+            alert(data + "成功！")
+
+        },
+        error: function (msg) {
+            alert("出错！");
+        }
+    });
+};
+
+{% endblock chart_models_content %}

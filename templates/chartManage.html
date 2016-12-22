@@ -17,7 +17,7 @@
         </div>
 
 		<div class="col-md-3 col-sm-6 column">
-            <button type="button" class="btn btn-sm btn-block btn-primary" href="#modal-edit-table" data-toggle="modal">编辑图表</button>
+            <button type="button" class="btn btn-sm btn-block btn-primary" href="#modal-edit-table" data-toggle="modal" onclick="getEditOptions()">编辑图表</button>
 		</div>
 		<div class="col-md-3 col-sm-6 column">
             <button type="button" class="btn btn-sm btn-block btn-primary">删除图表</button>
@@ -144,7 +144,7 @@
                 </h4>
             </div>
             <div class="modal-body">
-                <form role="form" method="get" id="editTable" href="/editChart">
+                <form role="form" method="post" id="editTable" action="EditChart">
                     <div class="form-group">
                         <div>
                             <label for="edit-table-name" class="control-label">选择需要操作的表单:</label>
@@ -170,6 +170,7 @@
                         </div>
                         <div>
                             <select  class="form-control" id="input-data-source" name="DataSource" >
+                                <option value="mysql" >mysql</option>
                             </select>
                         </div>
                     </div>
@@ -182,7 +183,7 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button> <button type="button" class="btn btn-primary" >保存</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button> <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="FSubmit('#editTable')">保存</button>
             </div>
         </div>
     </div>
@@ -191,63 +192,92 @@
 
 <script type="text/javascript">
 //获取新增图表界面下拉框选项
-        function getOptions() {
-            $.ajax({
-                url: "getNewChartOption",
-                type: "post",
-                dataType: "json",
-                contentType: "application/json",
-                traditional: true,
-                success: function (data) {
+function getOptions() {
+    $.ajax({
+        url: "getNewChartOption",
+        type: "post",
+        dataType: "json",
+        contentType: "application/json",
+        traditional: true,
+        success: function (data) {
 
-                        var optionstring = "";
-                        for (var j = 0; j < data.chart_type.length; j++) {
-                            optionstring += "<option value=\"" + data["chart_type"][j] + "\" >" + data["chart_type"][j] + "</option>";
-                        }
-                        $("#input-new-table-type").html(optionstring);
-                        optionstring = "";
-                        for (var j = 0; j < data.chart_group.length; j++) {
-                            optionstring += "<option value=\"" + data["chart_group"][j] + "\" >" + data["chart_group"][j] + "</option>";
-                        }
-                        $("#input-new-table-group").html(optionstring);
-                        optionstring = "";
-                        for (var j = 0; j < data.chart_theme.length; j++) {
-                            optionstring += "<option value=\"" + data["chart_theme"][j] + "\" >" + data["chart_theme"][j] + "</option>";
-                        }
-                        $("#input-new-table-theme").html(optionstring);
-
-                },
-                error: function (msg) {
-                    alert("出错了！");
+                var optionstring = "";
+                for (var j = 0; j < data.chart_type.length; j++) {
+                    optionstring += "<option value=\"" + data["chart_type"][j] + "\" >" + data["chart_type"][j] + "</option>";
                 }
-            });
-        };
+                $("#input-new-table-type").html(optionstring);
+                optionstring = "";
+                for (var j = 0; j < data.chart_group.length; j++) {
+                    optionstring += "<option value=\"" + data["chart_group"][j] + "\" >" + data["chart_group"][j] + "</option>";
+                }
+                $("#input-new-table-group").html(optionstring);
+                optionstring = "";
+                for (var j = 0; j < data.chart_theme.length; j++) {
+                    optionstring += "<option value=\"" + data["chart_theme"][j] + "\" >" + data["chart_theme"][j] + "</option>";
+                }
+                $("#input-new-table-theme").html(optionstring);
 
-</script>
+        },
+        error: function (msg) {
+            alert("出错了！");
+        }
+    });
+};
 
 
-<script type="text/javascript">
-//提交表单
+//ajax提交表单
 function postForm(url,uuid) {
+    obj = "#"+ uuid;
+    $.ajax({
+        url: url,
+        type: "get",
+{#                dataType: "json",#}
+{#                contentType: "application/json",#}
+{#                traditional: true,#}
+        data: $(obj).serialize(),
+        success: function (data) {
+            alert(data + "成功！")
 
-            obj = "#"+ uuid;
-            $.ajax({
-                url: url,
-                type: "get",
-                dataType: "json",
-                contentType: "application/json",
-                traditional: true,
-                data: $(obj).serialize(),
-                success: function (data) {
-                    alert(data + "提交成功！")
+        },
+        error: function (msg) {
+            alert("出错！");
+        }
+    });
+};
 
-                },
-                error: function (msg) {
-                    alert("提交出错！");
+//普通提交表单
+function FSubmit(obj) {
+
+    $(obj).submit();
+};
+
+//获取编辑图表下拉选项
+function getEditOptions() {
+    $.ajax({
+        url: "getEditOption",
+        type: "post",
+        dataType: "json",
+        contentType: "application/json",
+        traditional: true,
+        success: function (data) {
+
+                var optionstring = "";
+                for (var j = 0; j < data.chart_name.length; j++) {
+                    optionstring += "<option value=\"" + data["chart_name"][j] + "\" >" + data["chart_name"][j] + "</option>";
                 }
-            });
-        };
+                $("#edit-table-name").html(optionstring);
+
+
+
+
+        },
+        error: function (msg) {
+            alert("出错了！");
+        }
+    });
+};
 
 </script>
+
 
 {% endblock chart_models_content %}
