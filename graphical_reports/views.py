@@ -82,19 +82,28 @@ def edit_chart(request):
 def runSql(request):
     if request.method == 'POST':
         try:
-            host = request.POST.get("host")
-            port = request.POST.get("port")
-            db_name = request.POST.get("dbName")
-            db_sql = request.POST.get("dbSql")
-            user = request.POST.get("user")
-            password = request.POST.get("password")
-            conn = MySQLdb.Connect(host, user, password, db_name, port, charset='utf8')
+            req = json.loads(request.body)
+            req_post = {}
+            for i in req:
+                req_post[i["name"]] = i["value"]
+            db_sql = req_post["dbSql"]
+            conn = MySQLdb.Connect(req_post["host"],
+                                   req_post["user"],
+                                   req_post["password"],
+                                   req_post["dbName"],
+                                   int(req_post["port"]),
+                                   charset='utf8')
             cur = conn.cursor()
             cur.execute(db_sql)
-
+            desc = [d[0] for d in cur.description]
             print cur.fetchall()
+            print cur.description
         except Exception,err:
             print err
+
+
+
+
     else:
         pass
 

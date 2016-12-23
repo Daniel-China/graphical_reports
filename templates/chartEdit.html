@@ -28,7 +28,7 @@
     </div>
     <div class="row clearfix">
 		<div class="col-md-12 column">
-			<form class="form-horizontal" role="form" id="dataSource">
+			<form class="form-horizontal" role="form" id="dataSource" action="runSql" method="post">
 
 				<div class="form-group">
 					 <label for="inputHost" class="col-sm-2 control-label">源地址:</label>
@@ -66,7 +66,7 @@
                     <textarea id="inputSql" class="form-control" name="dbSql"></textarea>
 				</div>
                 <div class="col-sm-offset-2 col-sm-8">
-                    <button type="button" class="btn btn-sm btn-primary" onclick="runSql()">执行测试</button>
+                    <button type="button" class="btn btn-sm btn-primary" onclick="runSql()" >执行测试</button>
                 </div>
 				</div>
 			</form>
@@ -82,17 +82,17 @@ function runSql(){
     $.ajax({
         url: "runSql",
         type: "post",
-        dataType: "json",
-        contentType: "application/json",
-        traditional: true,
-        data: $("#dataSource").serialize(),
+{#        dataType: "json",#}
+{#        contentType: "application/json",#}
+{#        traditional: true,#}
+        data: JSON.stringify($("#dataSource").serializeArray()),
         success: function (data) {
-            if ()
-            alert(data + "成功！")
+
+            alert(JSON.stringify($("#dataSource").serializeArray()) + "成功！")
 
         },
         error: function (msg) {
-            alert("出错！");
+            alert(JSON.stringify($("#dataSource").serializeArray()) + "出错！");
         }
     });
 };
