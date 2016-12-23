@@ -86,11 +86,13 @@ def runSql(request):
             port = request.POST.get("port")
             db_name = request.POST.get("dbName")
             db_sql = request.POST.get("dbSql")
-            conn = sqlite3.connect("db.sqlite3")
-            cu = conn.cursor()
-            cu.execute(db_sql)
+            user = request.POST.get("user")
+            password = request.POST.get("password")
+            conn = MySQLdb.Connect(host, user, password, db_name, port, charset='utf8')
+            cur = conn.cursor()
+            cur.execute(db_sql)
 
-            print cu.fetchall()
+            print cur.fetchall()
         except Exception,err:
             print err
     else:
