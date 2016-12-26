@@ -98,12 +98,15 @@ def runSql(request):
             cur = conn.cursor()
             cur.execute(db_sql)
             desc = [d[0] for d in cur.description]
-            xyaxis = ['x','y']
+            xyaxis = [['x','x轴-刻度'],['y', 'y轴-图例']]
             print desc
             insert_txt = render_to_response("bondingTable.html",locals()).content
             new_table = ChartInfo.objects.get(name=req_post["chartName"])
             new_table.sql_exec = json.dumps(req_post)
+            new_table.sql_data = json.dumps(dict(zip(desc, zip(*cur.fetchall()))))
             new_table.save()
+            cur.close()
+            conn.close()
         except Exception,err:
             print err
 

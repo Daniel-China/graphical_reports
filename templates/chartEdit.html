@@ -6,20 +6,20 @@
 	<div class="row clearfix">
 		<div class="col-md-4 column">
 			 <span class="label label-default">编辑图表属性</span>
-			<div class="panel panel-default">
-				<div class="panel-heading">
-					<h3 class="panel-title">
-						图表名称：
-					</h3>
+            </div>
+        	</div>
+
+<div class="row clearfix">
+    <div class="col-sm-1 column ">
+        </div>
+				<div class="col-sm-2 column ">
+					<label for="displayName" class="control-label">图表名称：</label>
+
 				</div>
-				<div class="panel-body">
-					{{ chart_name }}
+				<div class="col-sm-2" id="displayName">
+					<code>{{ chart_name }}</code>
 				</div>
 
-			</div>
-		</div>
-		<div class="col-md-8 column">
-		</div>
 	</div>
 	<div class="row clearfix">
         <div class="col-sm-2 column ">
@@ -97,6 +97,21 @@ function runSql(){
         },
         error: function (msg) {
             alert(JSON.stringify($("#dataSource").serializeArray()) + "出错！");
+        }
+    });
+};
+
+//保存配置
+function saveChart(){
+    $.ajax({
+        url: "saveChart",
+        type: "post",
+        data: JSON.stringify($("#bonding").serializeArray()),
+        success: function (data) {
+            alert(data + "成功！");
+        },
+        error: function (msg) {
+            alert(JSON.stringify($("#bonding").serializeArray()) + "出错！");
         }
     });
 };

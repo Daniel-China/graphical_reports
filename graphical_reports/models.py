@@ -13,6 +13,8 @@ class ChartInfo(models.Model):
     is_config = models.BooleanField()
     group_name = models.ForeignKey('ChartGroup')
     sql_exec = models.TextField()
+    sql_data = models.TextField()
+    excel_data = models.TextField()
 
 
     title_config = models.TextField()

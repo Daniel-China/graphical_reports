@@ -19,7 +19,7 @@
                     <label for="s{{ col }}" class="control-label">绑定类型:</label>
                     <select   id="s{{ col }}" name="{{ col }}" >
                         {% for option in xyaxis %}
-                            <option value="{{ option }}" >{{ option }}</option>
+                            <option value="{{ option.0 }}" >{{ option.1 }}</option>
                         {% endfor %}
                     </select>
                 </td>
@@ -37,5 +37,6 @@
             </tr>
         </tbody>
     </table>
+<button type="button" class="btn btn-sm btn-primary" onclick="saveChart()" >保存结果</button>
 </form>
 </div>
