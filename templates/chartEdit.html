@@ -34,6 +34,7 @@
 					 <label for="inputHost" class="col-sm-2 control-label">源地址:</label>
 					<div class="col-sm-4">
 						<input type="text" class="form-control" id="inputHost" name="host"/>
+                        <input type="hidden" name="chartName" value="{{ chart_name }}">
 					</div>
 
 					 <label for="inputPort" class="col-sm-2 control-label">端口号:</label>
@@ -73,6 +74,9 @@
 		</div>
 	</div>
 </div>
+<div id="bondingTable">
+
+</div>
 
 
 
@@ -87,8 +91,8 @@ function runSql(){
 {#        traditional: true,#}
         data: JSON.stringify($("#dataSource").serializeArray()),
         success: function (data) {
-
-            alert(JSON.stringify($("#dataSource").serializeArray()) + "成功！")
+            $("#bondingTable").html(data);
+            alert(data + "成功！");
 
         },
         error: function (msg) {

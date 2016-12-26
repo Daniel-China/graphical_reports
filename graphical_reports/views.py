@@ -65,8 +65,8 @@ def new_table_create(request):
                               group_name=ChartGroup.objects.get(group_name=request.GET.get("newTableGroup")),
                               preview_config=json.dumps(new_table_config))
         new_table.save()
-    except Exception,e:
-        print e
+    except Exception,err:
+        print err
     return new_table_config
 
 
@@ -80,7 +80,9 @@ def edit_chart(request):
 
 @csrf_exempt
 def runSql(request):
+    '''数据源配置'''
     if request.method == 'POST':
+
         try:
             req = json.loads(request.body)
             req_post = {}
@@ -96,8 +98,12 @@ def runSql(request):
             cur = conn.cursor()
             cur.execute(db_sql)
             desc = [d[0] for d in cur.description]
-            print cur.fetchall()
-            print cur.description
+            xyaxis = ['x','y']
+            print desc
+            insert_txt = render_to_response("bondingTable.html",locals()).content
+            new_table = ChartInfo.objects.get(name=req_post["chartName"])
+            new_table.sql_exec = json.dumps(req_post)
+            new_table.save()
         except Exception,err:
             print err
 
@@ -107,7 +113,24 @@ def runSql(request):
     else:
         pass
 
+    return HttpResponse(json.dumps(insert_txt), content_type="application/json")
 
 
 
-    return render_to_response('test.html', locals())
+@csrf_exempt
+def save_Chart(request):
+    if request.method == 'POST':
+        try:
+            req = json.loads(request.body)
+
+
+
+        except Exception,err:
+            print err
+
+
+
+
+
+
+    return

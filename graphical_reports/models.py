@@ -12,6 +12,8 @@ class ChartInfo(models.Model):
     type = models.CharField(max_length=40)
     is_config = models.BooleanField()
     group_name = models.ForeignKey('ChartGroup')
+    sql_exec = models.TextField()
+
 
     title_config = models.TextField()
     legend_config = models.TextField()

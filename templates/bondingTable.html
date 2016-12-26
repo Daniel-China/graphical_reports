@@ -1,0 +1,41 @@
+<div class="col-md-12 column">
+<form role="form" method="post" id="bonding" action="saveChart">
+    <input type="hidden" name="chartName" value="{{ req_post.chartName }}">
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                {% for col in desc %}
+                <th>
+                    {{ col }}
+                </th>
+                {% endfor %}
+
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="success">
+                {% for col in desc %}
+                <td>
+                    <label for="s{{ col }}" class="control-label">绑定类型:</label>
+                    <select   id="s{{ col }}" name="{{ col }}" >
+                        {% for option in xyaxis %}
+                            <option value="{{ option }}" >{{ option }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+                {% endfor %}
+
+            </tr>
+            <tr class="war">
+                {% for col in desc %}
+                <td>
+                    <label for="{{ col }}" class="control-label">显示名称:</label>
+                    <input type="text" class="form-control" id="{{ col }}" name="{{ col }}"/>
+                </td>
+                {% endfor %}
+
+            </tr>
+        </tbody>
+    </table>
+</form>
+</div>
