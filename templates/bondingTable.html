@@ -17,7 +17,7 @@
                 {% for col in desc %}
                 <td>
                     <label for="s{{ col }}" class="control-label">绑定类型:</label>
-                    <select   id="s{{ col }}" name="{{ col }}" >
+                    <select   id="s{{ col }}" name="{{ col }}_type" >
                         {% for option in xyaxis %}
                             <option value="{{ option.0 }}" >{{ option.1 }}</option>
                         {% endfor %}
@@ -30,7 +30,7 @@
                 {% for col in desc %}
                 <td>
                     <label for="{{ col }}" class="control-label">显示名称:</label>
-                    <input type="text" class="form-control" id="{{ col }}" name="{{ col }}"/>
+                    <input type="text" class="form-control" id="{{ col }}" name="{{ col }}_display"/>
                 </td>
                 {% endfor %}
 

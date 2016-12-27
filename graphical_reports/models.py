@@ -15,6 +15,7 @@ class ChartInfo(models.Model):
     sql_exec = models.TextField()
     sql_data = models.TextField()
     excel_data = models.TextField()
+    bonding_info = models.TextField()
 
 
     title_config = models.TextField()

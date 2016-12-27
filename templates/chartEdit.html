@@ -108,7 +108,7 @@ function saveChart(){
         type: "post",
         data: JSON.stringify($("#bonding").serializeArray()),
         success: function (data) {
-            alert(data + "成功！");
+            alert(JSON.stringify(data) + "成功！");
         },
         error: function (msg) {
             alert(JSON.stringify($("#bonding").serializeArray()) + "出错！");

@@ -125,6 +125,13 @@ def save_Chart(request):
     if request.method == 'POST':
         try:
             req = json.loads(request.body)
+            req_post = {}
+            for i in req:
+                req_post[i["name"]]=i["value"]
+            new_table = ChartInfo.objects.get(name=req_post["chartName"])
+            new_table.bonding_info = json.dumps(req_post)
+            new_table.is_config = True
+            new_table.save()
 
 
 
@@ -136,4 +143,4 @@ def save_Chart(request):
 
 
 
-    return
+    return HttpResponse(json.dumps(req_post), content_type="application/json")
