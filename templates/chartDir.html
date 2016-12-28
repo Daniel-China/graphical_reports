@@ -1,0 +1,44 @@
+{% extends 'base_temp.html' %}
+
+{% block chart_models_content %}
+
+<div class="container" >
+	<div class="row clearfix">
+		<div class="col-md-6 column">
+			 <span class="label label-default">分组显示</span>
+		</div>
+		<div class="col-md-6 column">
+		</div>
+	</div>
+	<div class="row clearfix">
+        {% for group in groups %}
+		<div class="col-md-3 col-sm-6 column">
+            <button type="button" class="btn btn-sm btn-block btn-primary" href="/chartShow?group={{ group.id }}"  onclick="get()" >{{ group.group_name }}</button>
+        </div>
+        {% endfor %}
+
+	</div>
+	<div class="row clearfix">
+		<div class="col-md-6 column">
+			 <span class="label label-default">单表展示</span>
+		</div>
+		<div class="col-md-6 column">
+		</div>
+	</div>
+	<div class="row clearfix">
+        {% for chart in charts %}
+		<div class="col-md-3 col-sm-6 column">
+            <button type="button" class="btn btn-sm btn-block " href="/chartShow?chart={{ chart.id }}"  onclick="get()" >{{ chart.name }}</button>
+        </div>
+        {% endfor %}
+
+	</div>
+</div>
+
+
+
+
+
+
+
+{% endblock chart_models_content %}

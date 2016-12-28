@@ -110,9 +110,6 @@ def runSql(request):
         except Exception,err:
             print err
 
-
-
-
     else:
         pass
 
@@ -133,14 +130,35 @@ def save_Chart(request):
             new_table.is_config = True
             new_table.save()
 
-
-
         except Exception,err:
             print err
 
-
-
-
-
-
     return HttpResponse(json.dumps(req_post), content_type="application/json")
+
+
+@csrf_exempt
+def chart_dir(request):
+    ChartInfoAll = ChartInfo.objects.all()
+    groups = ChartGroup.objects.all()
+    charts = []
+    for Chart in ChartInfoAll:
+        if Chart.is_config == True:
+            charts.append(Chart)
+
+    return render_to_response('chartDir.html', locals())
+
+
+@csrf_exempt
+def chart_show(request):
+    if len(request.GET.get("group")) > 0:
+        pass
+    elif len(request.GET.get("chart")) >0:
+        chart_obj = ChartInfo.objects.get(id=request.GET.get("chart"))
+        chart_json = make_chart_config(chart_obj)
+
+    return render_to_response('chartDir.html', locals())
+
+def make_chart_config(chart_obj):
+
+
+    return
