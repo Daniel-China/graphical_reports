@@ -1,0 +1,23 @@
+{% extends 'base_temp.html' %}
+{% block chart_models_head %}
+    <script src="/static/js/echarts.js"></script>
+    <script src="/static/js/theme/{{ theme }}.js"></script>
+
+{% endblock chart_models_head %}
+
+
+{% block chart_models_content %}
+
+<div id="main" style="width: 800px;height:600px;"></div>
+<script type="text/javascript">
+    var myChart = echarts.init(document.getElementById('main'), '{{ theme }}');
+        option ={{ chart_json }}
+    myChart.setOption(option);
+</script>
+
+
+
+
+
+
+{% endblock chart_models_content %}

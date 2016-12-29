@@ -6,7 +6,18 @@ from django.http import HttpResponseRedirect,HttpResponse
 from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
 from models import ChartGroup,ChartInfo,ConfigOption
+from datetime import date, datetime
 import json,MySQLdb,sqlite3
+
+
+class CJsonEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, datetime):
+            return obj.strftime('%Y-%m-%d %H:%M:%S')
+        elif isinstance(obj, date):
+            return obj.strftime('%Y-%m-%d')
+        else:
+            return json.JSONEncoder.default(self, obj)
 
 def home(request):
     table_data = []
@@ -103,7 +114,8 @@ def runSql(request):
             insert_txt = render_to_response("bondingTable.html",locals()).content
             new_table = ChartInfo.objects.get(name=req_post["chartName"])
             new_table.sql_exec = json.dumps(req_post)
-            new_table.sql_data = json.dumps(dict(zip(desc, zip(*cur.fetchall()))))
+            new_table.sql_desc = json.dumps(desc)
+            new_table.sql_data = json.dumps(dict(zip(desc, zip(*cur.fetchall()))), cls=CJsonEncoder)
             new_table.save()
             cur.close()
             conn.close()
@@ -138,11 +150,12 @@ def save_Chart(request):
 
 @csrf_exempt
 def chart_dir(request):
+    '''展示页'''
     ChartInfoAll = ChartInfo.objects.all()
     groups = ChartGroup.objects.all()
     charts = []
     for Chart in ChartInfoAll:
-        if Chart.is_config == True:
+        if Chart.is_config:
             charts.append(Chart)
 
     return render_to_response('chartDir.html', locals())
@@ -152,13 +165,39 @@ def chart_dir(request):
 def chart_show(request):
     if len(request.GET.get("group")) > 0:
         pass
-    elif len(request.GET.get("chart")) >0:
+    elif len(request.GET.get("chart")) > 0:
         chart_obj = ChartInfo.objects.get(id=request.GET.get("chart"))
+        theme = chart_obj.theme
         chart_json = make_chart_config(chart_obj)
 
-    return render_to_response('chartDir.html', locals())
+    return render_to_response('chartViews.html', locals())
 
 def make_chart_config(chart_obj):
+    '''合成图表配置json'''
+    chart_config = json.loads(chart_obj.preview_config)
+    chart_data = json.loads(chart_obj.sql_data)
+    chart_bonding = json.loads(chart_obj.sql_bonding)
+    legend = []
+    desc = []
+    try:
+        for col in json.loads(chart_obj.desc):
+            if chart_bonding[col+'_type'] == 'y':
+                if len(chart_bonding[col+'_display']):
+                    legend.append(chart_bonding[col + '_display'])
+                else:
+                    legend.append(col)
+                desc.append(col)
+            elif chart_bonding[col+'_type'] == 'x':
+                chart_config['xAxis'][0]['data'] = chart_data[col]
 
+        chart_config['legend']['data'] = legend
+        pre_series = chart_config['series'][0]
+        chart_config['series'] = []
+        for i,col in enumerate(legend):
+            pre_series['name'], pre_series['stack'] = col
+            pre_series['data'] = chart_data[desc[i]]
+            chart_config['series'].append(pre_series)
+    except Exception, err:
+        print err
 
-    return
+    return json.dumps(chart_config)

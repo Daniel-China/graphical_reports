@@ -28,7 +28,7 @@
 	<div class="row clearfix">
         {% for chart in charts %}
 		<div class="col-md-3 col-sm-6 column">
-            <button type="button" class="btn btn-sm btn-block " href="/chartShow?chart={{ chart.id }}"  onclick="get()" >{{ chart.name }}</button>
+            <button type="button" class="btn btn-sm btn-block " onclick='location.href("/chartShow?chart={{ chart.id }}")' >{{ chart.name }}</button>
         </div>
         {% endfor %}
 
