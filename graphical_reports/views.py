@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #encoding:utf8
-from django.shortcuts import render_to_response
+from django.shortcuts import render_to_response,render
 from django.views.decorators.cache import never_cache
 from django.http import HttpResponseRedirect,HttpResponse
 from django.template import RequestContext
@@ -163,24 +163,27 @@ def chart_dir(request):
 
 @csrf_exempt
 def chart_show(request):
-    if len(request.GET.get("group")) > 0:
-        pass
-    elif len(request.GET.get("chart")) > 0:
-        chart_obj = ChartInfo.objects.get(id=request.GET.get("chart"))
-        theme = chart_obj.theme
-        chart_json = make_chart_config(chart_obj)
+    try:
+        if request.GET.get("group"):
+            pass
+        elif request.GET.get("chart"):
+            chart_obj = ChartInfo.objects.get(id=request.GET.get("chart"))
+            theme = chart_obj.theme
+            chart_json = make_chart_config(chart_obj)
+    except Exception, err:
+        print err
 
-    return render_to_response('chartViews.html', locals())
+    return render(request,'chartViews.html', locals())
 
 def make_chart_config(chart_obj):
     '''合成图表配置json'''
     chart_config = json.loads(chart_obj.preview_config)
     chart_data = json.loads(chart_obj.sql_data)
-    chart_bonding = json.loads(chart_obj.sql_bonding)
+    chart_bonding = json.loads(chart_obj.bonding_info)
     legend = []
     desc = []
     try:
-        for col in json.loads(chart_obj.desc):
+        for col in json.loads(chart_obj.sql_desc):
             if chart_bonding[col+'_type'] == 'y':
                 if len(chart_bonding[col+'_display']):
                     legend.append(chart_bonding[col + '_display'])
@@ -193,10 +196,13 @@ def make_chart_config(chart_obj):
         chart_config['legend']['data'] = legend
         pre_series = chart_config['series'][0]
         chart_config['series'] = []
+
         for i,col in enumerate(legend):
-            pre_series['name'], pre_series['stack'] = col
+            pre_series['name'] = col
+            pre_series['stack'] = col
             pre_series['data'] = chart_data[desc[i]]
             chart_config['series'].append(pre_series)
+        print chart_config
     except Exception, err:
         print err
 

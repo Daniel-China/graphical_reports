@@ -8,10 +8,12 @@
 
 {% block chart_models_content %}
 
-<div id="main" style="width: 800px;height:600px;"></div>
+<div id="main" style="width: 1000px;height:400px;"></div>
 <script type="text/javascript">
     var myChart = echarts.init(document.getElementById('main'), '{{ theme }}');
+    {% autoescape off %}
         option ={{ chart_json }}
+    {% endautoescape %}
     myChart.setOption(option);
 </script>
 

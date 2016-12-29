@@ -13,7 +13,7 @@
 	<div class="row clearfix">
         {% for group in groups %}
 		<div class="col-md-3 col-sm-6 column">
-            <button type="button" class="btn btn-sm btn-block btn-primary" href="/chartShow?group={{ group.id }}"  onclick="get()" >{{ group.group_name }}</button>
+            <button type="button" class="btn btn-sm btn-block btn-primary" href="chartShow?group={{ group.id }}"  onclick="get()" >{{ group.group_name }}</button>
         </div>
         {% endfor %}
 
@@ -28,7 +28,8 @@
 	<div class="row clearfix">
         {% for chart in charts %}
 		<div class="col-md-3 col-sm-6 column">
-            <button type="button" class="btn btn-sm btn-block " onclick='location.href("/chartShow?chart={{ chart.id }}")' >{{ chart.name }}</button>
+            <a class="btn btn-sm btn-block btn-primary " role="button" href="chartShow?chart={{ chart.id }}" >{{ chart.name }}</a>
+
         </div>
         {% endfor %}
 
