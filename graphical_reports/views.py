@@ -11,6 +11,7 @@ import json,MySQLdb,sqlite3
 
 
 class CJsonEncoder(json.JSONEncoder):
+    """Json的子类，用于转换date或者datetime类型的数据"""
     def default(self, obj):
         if isinstance(obj, datetime):
             return obj.strftime('%Y-%m-%d %H:%M:%S')
@@ -48,6 +49,15 @@ def get_EditOption(request):
 
 
 @csrf_exempt
+def get_DelOption(request):
+    chart_name = []
+    for i in ChartInfo.objects.all():
+        chart_name.append(i.name)
+    edit_option = {'chart_name': chart_name}
+    return HttpResponse(json.dumps(edit_option), content_type="application/json")
+
+
+@csrf_exempt
 def add_NewChart(request):
     # if request.is_ajax() and request.method == 'POST':
     # print request.POST["newTableName"]
@@ -56,8 +66,28 @@ def add_NewChart(request):
     print new_table_create(request)
     return HttpResponse(json.dumps(new_table_name), content_type="application/json")
 
+@csrf_exempt
+def del_chart(request):
+    req = json.loads(request.body)
+    req_post = {}
+    for i in req:
+        req_post[i["name"]] = i["value"]
+    table_name = req_post['delTableName']
+    res = []
+    if table_name == req_post['confirmTableName']:
+        try:
+            ChartInfo.objects.filter(name=table_name).delete()
+            res = "删除"
+        except Exception, err:
+            print err
+    else:
+        res = "删除不"
+
+    return HttpResponse(json.dumps(res), content_type="application/json")
+
 
 def new_table_create(request):
+    """生成新图表基本配置"""
     default_option = ConfigOption.objects.get(id=1)
     new_table_config = {'title': json.loads(default_option.title_default),
                         'legend': json.loads(default_option.legend_default),
@@ -91,7 +121,7 @@ def edit_chart(request):
 
 @csrf_exempt
 def runSql(request):
-    '''数据源配置'''
+    """数据源配置"""
     if request.method == 'POST':
 
         try:
@@ -117,6 +147,8 @@ def runSql(request):
             new_table.sql_desc = json.dumps(desc)
             new_table.sql_data = json.dumps(dict(zip(desc, zip(*cur.fetchall()))), cls=CJsonEncoder)
             new_table.save()
+            """保存查询结果的字段和数据"""
+
             cur.close()
             conn.close()
         except Exception,err:
@@ -131,6 +163,7 @@ def runSql(request):
 
 @csrf_exempt
 def save_Chart(request):
+    """保存绑定信息"""
     if request.method == 'POST':
         try:
             req = json.loads(request.body)
@@ -150,7 +183,7 @@ def save_Chart(request):
 
 @csrf_exempt
 def chart_dir(request):
-    '''展示页'''
+    """展示页"""
     ChartInfoAll = ChartInfo.objects.all()
     groups = ChartGroup.objects.all()
     charts = []
@@ -163,6 +196,7 @@ def chart_dir(request):
 
 @csrf_exempt
 def chart_show(request):
+    """图表展示界页生成"""
     try:
         if request.GET.get("group"):
             pass
@@ -176,7 +210,7 @@ def chart_show(request):
     return render(request,'chartViews.html', locals())
 
 def make_chart_config(chart_obj):
-    '''合成图表配置json'''
+    """合成图表配置json"""
     chart_config = json.loads(chart_obj.preview_config)
     chart_data = json.loads(chart_obj.sql_data)
     chart_bonding = json.loads(chart_obj.bonding_info)
