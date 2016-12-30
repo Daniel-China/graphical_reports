@@ -68,6 +68,7 @@ def add_NewChart(request):
 
 @csrf_exempt
 def del_chart(request):
+    """删除图表"""
     req = json.loads(request.body)
     req_post = {}
     for i in req:
