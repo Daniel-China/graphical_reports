@@ -103,6 +103,7 @@ def new_table_create(request):
         new_table_config["title"]["text"] = request.GET.get("newTableName")
         new_table = ChartInfo(name=request.GET.get("newTableName"),
                               theme=request.GET.get("newTableTheme"),
+                              dataZoom_config=request.GET.get("zoomNum"),
                               is_config=False,
                               group_name=ChartGroup.objects.get(group_name=request.GET.get("newTableGroup")),
                               preview_config=json.dumps(new_table_config))
@@ -215,29 +216,47 @@ def make_chart_config(chart_obj):
     chart_config = json.loads(chart_obj.preview_config)
     chart_data = json.loads(chart_obj.sql_data)
     chart_bonding = json.loads(chart_obj.bonding_info)
+
+
     legend = []
     desc = []
+
     try:
         for col in json.loads(chart_obj.sql_desc):
             if chart_bonding[col+'_type'] == 'y':
                 if len(chart_bonding[col+'_display']):
                     legend.append(chart_bonding[col + '_display'])
+
                 else:
                     legend.append(col)
                 desc.append(col)
             elif chart_bonding[col+'_type'] == 'x':
                 chart_config['xAxis'][0]['data'] = chart_data[col]
+                chart_config['xAxis'][0]['name'] = chart_bonding[col + '_display']
+                chart_config['dataZoom'][0]['endValue'] = len(chart_data[col])
+                if int(chart_obj.dataZoom_config)>=len(chart_data[col]):
+                    chart_config['dataZoom'][0]['startValue'] = 0
+                else:
+                    chart_config['dataZoom'][0]['startValue'] = len(chart_data[col])-int(chart_obj.dataZoom_config)
+
+
 
         chart_config['legend']['data'] = legend
         pre_series = chart_config['series'][0]
-        chart_config['series'] = []
+        chart_config['series'] = [col for col in desc]
+        series = []
 
-        for i,col in enumerate(legend):
-            pre_series['name'] = col
-            pre_series['stack'] = col
-            pre_series['data'] = chart_data[desc[i]]
-            chart_config['series'].append(pre_series)
-        print chart_config
+        for i,col in enumerate(desc):
+            pre = pre_series
+            pre['name'] = chart_bonding[col+'_display']
+            pre['stack'] = chart_bonding[col+'_display']
+            pre['data'] = chart_data[col]
+            print json.dumps(pre)
+            series.append(json.dumps(pre))
+            print series
+        chart_config['series'] = [json.loads(col) for col in series]
+
+
     except Exception, err:
         print err
 

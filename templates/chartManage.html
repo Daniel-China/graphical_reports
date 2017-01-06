@@ -104,6 +104,7 @@
                         </div>
                     </div>
 
+
                     <div class="form-group">
                         <div >
                             <label for="input-new-table-theme">主题风格:</label>
@@ -111,6 +112,14 @@
                         <div >
                             <select  id="input-new-table-theme" name="newTableTheme" class="form-control">
                             </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div>
+                            <label for="input-zoom-num">默认显示的数量:</label>
+                        </div>
+                        <div>
+                            <input type="text" class="form-control" name="zoomNum" id="input-zoom-num"  />
                         </div>
                     </div>
                     <div class="form-group">
@@ -158,14 +167,7 @@
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <div>
-                            <label for="input-legend-num">设定图列数量:</label>
-                        </div>
-                        <div>
-                            <input type="text" class="form-control" name="legend-num" id="input-legend-num"  value='1' />
-                        </div>
-                    </div>
+
 
                     <div class="form-group">
                         <div>
@@ -288,11 +290,15 @@ function postForm(url,uuid) {
 {#                traditional: true,#}
         data: $(obj).serialize(),
         success: function (data) {
-            alert(data + "成功！")
+            optionstring = '<div class="alert alert-dismissable alert-success navbar-fixed-bottom"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button><h4>成功!</h4><a>成功创建</a><strong>' + data + '</strong></div>';
+
+            $("#alert").html(optionstring);
 
         },
         error: function (msg) {
-            alert("出错！");
+            optionstring = '<div class="alert alert-dismissable alert-warning navbar-fixed-bottom"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button><h4>失败!</h4><strong>获取数据出错!</strong></div>';
+
+            $("#alert").html(optionstring);
         }
     });
 };
@@ -308,11 +314,15 @@ function postJsonForm(url,uuid) {
 {#                traditional: true,#}
         data: JSON.stringify($(obj).serializeArray()),
         success: function (data) {
-            alert(data + "成功！")
+            optionstring = '<div class="alert alert-dismissable alert-success navbar-fixed-bottom"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button><h4>成功!</h4><a>成功删除</a><strong>' + data + '</strong></div>';
+
+            $("#alert").html(optionstring);
 
         },
         error: function (msg) {
-            alert("出错！");
+            optionstring = '<div class="alert alert-dismissable alert-warning navbar-fixed-bottom"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button><h4>失败!</h4><strong>获取数据出错!</strong></div>';
+
+            $("#alert").html(optionstring);
         }
     });
 };
@@ -344,7 +354,9 @@ function getEditOptions() {
 
         },
         error: function (msg) {
-            alert("出错了！");
+            optionstring = '<div class="alert alert-dismissable alert-warning navbar-fixed-bottom"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button><h4>失败!</h4><strong>获取数据出错!</strong></div>';
+
+            $("#alert").html(optionstring);
         }
     });
 };
@@ -370,7 +382,9 @@ function getDelOptions() {
 
         },
         error: function (msg) {
-            alert("出错了！");
+            optionstring = '<div class="alert alert-dismissable alert-warning navbar-fixed-bottom"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button><h4>失败!</h4><strong>获取数据出错!</strong></div>';
+
+            $("#alert").html(optionstring);
         }
     });
 };
