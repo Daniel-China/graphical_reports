@@ -56,6 +56,14 @@ def get_DelOption(request):
     edit_option = {'chart_name': chart_name}
     return HttpResponse(json.dumps(edit_option), content_type="application/json")
 
+@csrf_exempt
+def get_ExtOption(request):
+    chart_name = []
+    for i in ChartInfo.objects.all():
+        chart_name.append(i.name)
+    edit_option = {'chart_name': chart_name}
+    return HttpResponse(json.dumps(edit_option), content_type="application/json")
+
 
 @csrf_exempt
 def add_NewChart(request):
@@ -85,6 +93,19 @@ def del_chart(request):
         res = "删除不"
 
     return HttpResponse(json.dumps(res), content_type="application/json")
+
+
+
+@csrf_exempt
+def ext_edit_chart(request):
+    '''高级图表配置'''
+    if request.method == 'POST':
+        chart_json = ChartInfo.objects.get(name=request.POST.get("extTableName"))
+        chart_pre = chart_json.preview_config
+
+
+
+    return render_to_response('chartextEdit.html', locals())
 
 
 def new_table_create(request):

@@ -23,6 +23,7 @@
             <button type="button" class="btn btn-sm btn-block btn-primary" href="#modal-del-table" data-toggle="modal" onclick="getDelOptions()">删除图表</button>
 		</div>
 		<div class="col-md-3 col-sm-6 column">
+            <button type="button" class="btn btn-sm btn-block btn-primary" href="#modal-ext-table" data-toggle="modal" onclick="getExtOptions()">高级配置</button>
 		</div>
 	</div>
     <div class="row clearfix">
@@ -43,6 +44,7 @@
             <button type="button" class="btn btn-sm btn-block btn-primary">删除分组</button>
 		</div>
 		<div class="col-md-3 col-sm-6 column">
+
 		</div>
 	</div>
 	<div class="row clearfix">
@@ -176,6 +178,8 @@
                         <div>
                             <select  class="form-control" id="input-data-source" name="DataSource" >
                                 <option value="mysql" >mysql</option>
+                                <option value="oracle" >oracle</option>
+                                <option value="cs" >csv导入</option>
                             </select>
                         </div>
                     </div>
@@ -239,7 +243,41 @@
     </div>
 </div>
 
+{# 高级配置表单弹窗#}
+<div class="modal fade" id="modal-ext-table" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title" >
+                    高级配置
+                </h4>
+            </div>
+            <div class="modal-body">
+                <form role="form" method="post" id="extTable" action="extEditChart">
+                    <div class="form-group">
+                        <div>
+                            <label for="ext-table-name" class="control-label">选择表格:</label>
+                        </div>
+                        <div>
+                            <select  id="ext-table-name" name="extTableName" class="form-control" >
+                            </select>
+                        </div>
+                    </div>
 
+
+
+
+
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                 <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button> <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="FSubmit('#extTable')">确认</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script type="text/javascript">
 //获取新增图表界面下拉框选项
@@ -376,6 +414,35 @@ function getDelOptions() {
                     optionstring += "<option value=\"" + data["chart_name"][j] + "\" >" + data["chart_name"][j] + "</option>";
                 }
                 $("#input-del-table-name").html(optionstring);
+
+
+
+
+        },
+        error: function (msg) {
+            optionstring = '<div class="alert alert-dismissable alert-warning navbar-fixed-bottom"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button><h4>失败!</h4><strong>获取数据出错!</strong></div>';
+
+            $("#alert").html(optionstring);
+        }
+    });
+};
+
+
+//获取高级图表下拉选项
+function getExtOptions() {
+    $.ajax({
+        url: "getExtOption",
+        type: "post",
+        dataType: "json",
+        contentType: "application/json",
+        traditional: true,
+        success: function (data) {
+
+                var optionstring = "";
+                for (var j = 0; j < data.chart_name.length; j++) {
+                    optionstring += "<option value=\"" + data["chart_name"][j] + "\" >" + data["chart_name"][j] + "</option>";
+                }
+                $("#ext-table-name").html(optionstring);
 
 
 
