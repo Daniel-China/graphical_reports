@@ -77,7 +77,7 @@ class ConfigOption(models.Model):
     series_default = models.TextField()
     series_type = models.TextField()
 
-class DataSource():
+class DataSource(models.Model):
     type = models.CharField(max_length=40)
     host = models.CharField(max_length=60)
     port = models.IntegerField(max_length=20)
