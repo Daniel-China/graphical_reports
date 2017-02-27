@@ -1,40 +1,45 @@
 #!/usr/bin/env python
-#encoding:utf8
-from django.shortcuts import render_to_response,render
+# encoding:utf8
+from django.shortcuts import render_to_response, render
 from django.views.decorators.cache import never_cache
-from django.http import HttpResponseRedirect,HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse
 from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
-from models import ChartGroup,ChartInfo,ConfigOption
-from datetime import date, datetime
-import json,MySQLdb,sqlite3
+from models import ChartGroup, ChartInfo, ConfigOption
+from datetime import date, datetime, timedelta
+import json, MySQLdb, pymysql
 
 
 class CJsonEncoder(json.JSONEncoder):
     """Json的子类，用于转换date或者datetime类型的数据"""
+
     def default(self, obj):
         if isinstance(obj, datetime):
             return obj.strftime('%Y-%m-%d %H:%M:%S')
         elif isinstance(obj, date):
             return obj.strftime('%Y-%m-%d')
+        elif isinstance(obj, timedelta):
+            return (datetime(2017, 2, 3, 00, 00, 00) + obj).strftime('%H:%M:%S')
         else:
             return json.JSONEncoder.default(self, obj)
+
 
 def home(request):
     table_data = []
     # print new_table_create(request)
     return render_to_response('chartManage.html', locals())
 
+
 @never_cache
 @csrf_exempt
 def get_NewChartOption(request):
-    default_option = ConfigOption.objects.get(id = 1)
+    default_option = ConfigOption.objects.get(id=1)
     group_name = []
     for i in ChartGroup.objects.all():
         group_name.append(i.group_name)
-    new_table_option ={'chart_type': json.loads(default_option.series_type),
-                       'chart_group': group_name,
-                       'chart_theme': json.loads(default_option.theme_option)}
+    new_table_option = {'chart_type': json.loads(default_option.series_type),
+                        'chart_group': group_name,
+                        'chart_theme': json.loads(default_option.theme_option)}
 
     return HttpResponse(json.dumps(new_table_option), content_type="application/json")
 
@@ -56,6 +61,7 @@ def get_DelOption(request):
     edit_option = {'chart_name': chart_name}
     return HttpResponse(json.dumps(edit_option), content_type="application/json")
 
+
 @csrf_exempt
 def get_ExtOption(request):
     chart_name = []
@@ -73,6 +79,7 @@ def add_NewChart(request):
     print request.GET['newTableName']
     print new_table_create(request)
     return HttpResponse(json.dumps(new_table_name), content_type="application/json")
+
 
 @csrf_exempt
 def del_chart(request):
@@ -95,15 +102,12 @@ def del_chart(request):
     return HttpResponse(json.dumps(res), content_type="application/json")
 
 
-
 @csrf_exempt
 def ext_edit_chart(request):
     '''高级图表配置'''
     if request.method == 'POST':
         chart_json = ChartInfo.objects.get(name=request.POST.get("extTableName"))
         chart_pre = chart_json.preview_config
-
-
 
     return render_to_response('chartextEdit.html', locals())
 
@@ -129,7 +133,7 @@ def new_table_create(request):
                               group_name=ChartGroup.objects.get(group_name=request.GET.get("newTableGroup")),
                               preview_config=json.dumps(new_table_config))
         new_table.save()
-    except Exception,err:
+    except Exception, err:
         print err
     return new_table_config
 
@@ -139,8 +143,8 @@ def edit_chart(request):
     if request.method == 'POST':
         chart_name = request.POST.get("TableName")
 
-
     return render_to_response('chartEdit.html', locals())
+
 
 @csrf_exempt
 def runSql(request):
@@ -162,26 +166,25 @@ def runSql(request):
             cur = conn.cursor()
             cur.execute(db_sql)
             desc = [d[0] for d in cur.description]
-            xyaxis = [['x','x轴-刻度'],['y', 'y轴-图例']]
+            xyaxis = [['x', 'x轴-刻度'], ['y', 'y轴-图例']]
             print desc
-            insert_txt = render_to_response("bondingTable.html",locals()).content
+            insert_txt = render_to_response("bondingTable.html", locals()).content
             new_table = ChartInfo.objects.get(name=req_post["chartName"])
             new_table.sql_exec = json.dumps(req_post)
             new_table.sql_desc = json.dumps(desc)
-            new_table.sql_data = json.dumps(dict(zip(desc, zip(*cur.fetchall()))), cls=CJsonEncoder)
+            # new_table.sql_data = json.dumps(dict(zip(desc, zip(*cur.fetchall()))), cls=CJsonEncoder)
             new_table.save()
             """保存查询结果的字段和数据"""
 
             cur.close()
             conn.close()
-        except Exception,err:
+        except Exception, err:
             print err
 
     else:
         pass
 
     return HttpResponse(json.dumps(insert_txt), content_type="application/json")
-
 
 
 @csrf_exempt
@@ -192,13 +195,13 @@ def save_Chart(request):
             req = json.loads(request.body)
             req_post = {}
             for i in req:
-                req_post[i["name"]]=i["value"]
+                req_post[i["name"]] = i["value"]
             new_table = ChartInfo.objects.get(name=req_post["chartName"])
             new_table.bonding_info = json.dumps(req_post)
             new_table.is_config = True
             new_table.save()
 
-        except Exception,err:
+        except Exception, err:
             print err
 
     return HttpResponse(json.dumps(req_post), content_type="application/json")
@@ -230,55 +233,70 @@ def chart_show(request):
     except Exception, err:
         print err
 
-    return render(request,'chartViews.html', locals())
+    return render(request, 'chartViews.html', locals())
+
 
 def make_chart_config(chart_obj):
     """合成图表配置json"""
     chart_config = json.loads(chart_obj.preview_config)
-    chart_data = json.loads(chart_obj.sql_data)
+    # chart_data = json.loads(chart_obj.sql_data)
     chart_bonding = json.loads(chart_obj.bonding_info)
+    chart_exec = json.loads(chart_obj.sql_exec)
+    try:
+        conn = pymysql.connect(host=chart_exec["host"],
+                               user=chart_exec["user"],
+                               passwd=chart_exec["password"],
+                               db=chart_exec["dbName"],
+                               port=int(chart_exec["port"]),
+                               charset='utf8')
+        cur = conn.cursor()
+        cur.execute(chart_exec["dbSql"])
+        desc = [d[0] for d in cur.description]
+        results_all = cur.fetchall()
+        chart_data = json.loads(json.dumps(dict(zip(desc, zip(*results_all))), cls=CJsonEncoder))
 
+    except Exception, err:
+        print err
 
     legend = []
     desc = []
 
     try:
         for col in json.loads(chart_obj.sql_desc):
-            if chart_bonding[col+'_type'] == 'y':
-                if len(chart_bonding[col+'_display']):
+            if chart_bonding[col + '_type'] == 'y':
+                if len(chart_bonding[col + '_display']):
                     legend.append(chart_bonding[col + '_display'])
 
                 else:
                     legend.append(col)
                 desc.append(col)
-            elif chart_bonding[col+'_type'] == 'x':
+            elif chart_bonding[col + '_type'] == 'x':
                 chart_config['xAxis'][0]['data'] = chart_data[col]
                 chart_config['xAxis'][0]['name'] = chart_bonding[col + '_display']
                 chart_config['dataZoom'][0]['endValue'] = len(chart_data[col])
-                if int(chart_obj.dataZoom_config)>=len(chart_data[col]):
+                if int(chart_obj.dataZoom_config) >= len(chart_data[col]):
                     chart_config['dataZoom'][0]['startValue'] = 0
                 else:
-                    chart_config['dataZoom'][0]['startValue'] = len(chart_data[col])-int(chart_obj.dataZoom_config)
-
-
+                    chart_config['dataZoom'][0]['startValue'] = len(chart_data[col]) - int(chart_obj.dataZoom_config)
+                    print chart_config['dataZoom'][0]['startValue'], chart_config['dataZoom'][0]['endValue']
 
         chart_config['legend']['data'] = legend
         pre_series = chart_config['series'][0]
         chart_config['series'] = [col for col in desc]
         series = []
 
-        for i,col in enumerate(desc):
+        for i, col in enumerate(desc):
             pre = pre_series
-            pre['name'] = chart_bonding[col+'_display']
-            pre['stack'] = chart_bonding[col+'_display']
+            pre['name'] = chart_bonding[col + '_display']
+            pre['stack'] = chart_bonding[col + '_display']
             pre['data'] = chart_data[col]
-            print json.dumps(pre)
+            # print json.dumps(pre)
             series.append(json.dumps(pre))
-            print series
+            # print series
         chart_config['series'] = [json.loads(col) for col in series]
 
 
     except Exception, err:
         print err
-
+    print chart_config['dataZoom']
     return json.dumps(chart_config)

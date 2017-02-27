@@ -1,8 +1,6 @@
 {% extends 'base_temp.html' %}
 {% block chart_models_head %}
-    <script src="/static/js/echarts.js"></script>
     <script src="/static/js/jsoneditor.min.js"></script>
-    <script src="/static/js/theme/{{ theme }}.js"></script>
     <link href="/static/css/jsoneditor.min.css" rel="stylesheet" type="text/css">
 
 
@@ -10,7 +8,7 @@
 
 
 {% block chart_models_content %}
-<div id="jsoneditor" style="width: 600px; height: 600px;"></div>
+<div id="jsoneditor" style="width: 800px; height: 800px;"></div>
 
 
 <script type="text/javascript">
