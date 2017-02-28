@@ -19,6 +19,20 @@
 				<div class="col-sm-2" id="displayName">
 					<code>{{ chart_name }}</code>
 				</div>
+                <div class="col-sm-2 column ">
+					<label for="displayName" class="control-label">数据源选择（可选）：</label>
+
+				</div>
+                <div class="col-sm-2 column control-label">
+                    <select onchange="Change()" id="sel">
+                        <option></option>
+                        {% for sourcename in data_source_name %}
+                        <option>{{ sourcename }}</option>
+                        {% endfor %}
+
+                    </select>
+                </div>
+
 
 	</div>
 	<div class="row clearfix">
@@ -52,7 +66,7 @@
                 <div class="form-group">
 					 <label for="inputUser" class="col-sm-2 control-label">用户名:</label>
 					<div class="col-sm-4">
-						<input type="text" class="form-control" id="inputUser" name="user"/>
+						<input type="text" class="form-control" id="inputUser" name="user" />
 					</div>
 
 					 <label for="inputPass" class="col-sm-2 control-label">密码:</label>
@@ -81,6 +95,32 @@
 
 
 <script type="text/javascript">
+//获取数据源配置
+function Change(){
+    var source_name = $("#sel").val();
+    $.ajax({
+        url: "getsource",
+        type: "post",
+        dataType: "json",
+        contentType: "application/json",
+        data: source_name,
+        success: function (data) {
+            $("#inputHost").val(data["host"]);
+            $("#inputPort").val(data["port"]);
+            $("#inputDBName").val(data["db_name"]);
+            $("#inputUser").val(data["user"]);
+            $("#inputPass").val(data["passwd"]);
+
+        },
+        error: function (msg) {
+            alert(msg);
+        }
+    });
+};
+
+
+
+
 //执行数据源配置
 function runSql(){
     $.ajax({

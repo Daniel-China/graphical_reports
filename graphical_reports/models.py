@@ -79,6 +79,7 @@ class ConfigOption(models.Model):
 
 class DataSource(models.Model):
     type = models.CharField(max_length=40)
+    source_name = models.CharField(max_length=60)
     host = models.CharField(max_length=60)
     port = models.IntegerField(max_length=20)
     db_name = models.CharField(max_length=60)

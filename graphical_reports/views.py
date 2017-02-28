@@ -5,7 +5,7 @@ from django.views.decorators.cache import never_cache
 from django.http import HttpResponseRedirect, HttpResponse
 from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
-from models import ChartGroup, ChartInfo, ConfigOption
+from models import ChartGroup, ChartInfo, ConfigOption, DataSource
 from datetime import date, datetime, timedelta
 import json, MySQLdb, pymysql
 
@@ -69,6 +69,24 @@ def get_ExtOption(request):
         chart_name.append(i.name)
     edit_option = {'chart_name': chart_name}
     return HttpResponse(json.dumps(edit_option), content_type="application/json")
+
+
+
+@csrf_exempt
+def get_Source(request):
+    if request.method == 'POST':
+        source_name = request.body
+        if source_name == '':
+            source_config = {'host': '', 'port': '', 'db_name': '', 'user': '', 'passwd': ''}
+        else:
+            source = DataSource.objects.get(source_name=request.body)
+            source_config = {'host': source.host,
+                             'port': source.port,
+                             'db_name': source.db_name,
+                             'user': source.user_name,
+                             'passwd': source.passwd}
+    return HttpResponse(json.dumps(source_config), content_type="application/json")
+
 
 
 @csrf_exempt
@@ -140,8 +158,14 @@ def new_table_create(request):
 
 @csrf_exempt
 def edit_chart(request):
+    '''图表编辑页面'''
     if request.method == 'POST':
         chart_name = request.POST.get("TableName")
+        data_source = DataSource.objects.all()
+        data_source_name = []
+        for i in data_source:
+            data_source_name.append(i.source_name)
+
 
     return render_to_response('chartEdit.html', locals())
 
