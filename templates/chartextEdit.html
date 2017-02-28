@@ -8,7 +8,19 @@
 
 
 {% block chart_models_content %}
-<div id="jsoneditor" style="width: 800px; height: 800px;"></div>
+
+<div class="container">
+<p>
+    <button onclick="setJSON();">Set JSON</button>
+    <button onclick="getJSON();">Get JSON</button>
+</p>
+    <div class="col-sm-4 column label label-warning">
+					<label for="jsoneditor" class="control-label">高级属性修改：</label>
+
+				</div>
+    <div id="jsoneditor" style="width: 800px; height: 800px;"></div>
+    <div id="dd"><code id="ddd">fewsfsx</code></div>
+</div>
 
 
 <script type="text/javascript">
@@ -21,12 +33,13 @@
 
         // set json
     {% autoescape off %}
-        var json = {{ chart_pre }};
+        var chart_json = {{ chart_pre }};
     {% endautoescape %}
-        editor.set(json);
+        editor.set(chart_json);
 
         // get json
-        var json = editor.get();
+        var editor_json = editor.get();
+        $("#ddd").text(JSON.stringify(editor_json));
 
 
 </script>

@@ -1,0 +1,51 @@
+{% extends 'base_temp.html' %}
+{% block chart_models_head %}
+    <script src="/static/js/jsoneditor.min.js"></script>
+    <script src="/static/js/ace.js"></script>
+    <script src="//cdn.bootcss.com/ace/1.2.6/mode-json.js"></script>
+    <link href="/static/css/jsoneditor.min.css" rel="stylesheet" type="text/css">
+    <style type="text/css">
+
+  </style>
+
+
+
+{% endblock chart_models_head %}
+
+
+{% block chart_models_content %}
+<div class="container">
+    <div class="row" >
+    <div class="col-sm-4 col-sm-offset-4  label label-warning">
+        <label for="jsoneditor" class="control-label">高级属性修改：{{ table_name }}</label>
+    </div>
+    </div>
+    <div class="row" >
+    <div class="col-sm-6 col-md-6 column col-sm-offset-3" id="jsoneditor" style=" height: 700px;"></div>
+    </div>
+{#    <div id="dd"><code id="ddd">fewsfsx</code></div>#}
+    <div class="col-sm-6 col-md-6 column col-sm-offset-3"><button class="btn btn-sm btn-info" onclick="getJSON();">保存配置</button></div>
+</div>
+
+
+<script>
+function getJSON() {
+    var editor_json = editor.get();
+    $("#ddd").text(JSON.stringify(editor_json));
+
+}
+  // create the editor
+  var container = document.getElementById('jsoneditor');
+  var options = {
+    modes: ['code', 'tree', 'form'],
+    mode: 'code',
+    ace: ace
+  };
+  {% autoescape off %}
+        var json = {{ chart_pre }};
+  {% endautoescape %}
+
+  var editor = new JSONEditor(container, options, json);
+</script>
+
+{% endblock chart_models_content %}

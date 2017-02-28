@@ -124,10 +124,11 @@ def del_chart(request):
 def ext_edit_chart(request):
     '''高级图表配置'''
     if request.method == 'POST':
-        chart_json = ChartInfo.objects.get(name=request.POST.get("extTableName"))
+        table_name = request.POST.get("extTableName")
+        chart_json = ChartInfo.objects.get(name=table_name)
         chart_pre = chart_json.preview_config
 
-    return render_to_response('chartextEdit.html', locals())
+    return render_to_response('ace.html', locals())
 
 
 def new_table_create(request):
