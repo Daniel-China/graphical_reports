@@ -23,4 +23,7 @@ urlpatterns = patterns('',
     url(r'^delChart$', 'graphical_reports.views.del_chart'),
     url(r'^runSql$', 'graphical_reports.views.runSql'),
     url(r'^saveChart$', 'graphical_reports.views.save_Chart'),
+    url(r'^saveJson$', 'graphical_reports.views.save_Json'),
+    url(r'^api$', 'graphical_reports.views.offline_api'),
+    url(r'^doc$', 'graphical_reports.views.offline_doc'),
 )

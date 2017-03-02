@@ -29,6 +29,12 @@ def home(request):
     # print new_table_create(request)
     return render_to_response('chartManage.html', locals())
 
+def offline_api(request):
+    return render_to_response('echarts-doc-offline/api.html', locals())
+
+def offline_doc(request):
+    return render_to_response('echarts-doc-offline/option.html', locals())
+
 
 @never_cache
 @csrf_exempt
@@ -147,6 +153,7 @@ def new_table_create(request):
         new_table_config["title"]["text"] = request.GET.get("newTableName")
         new_table = ChartInfo(name=request.GET.get("newTableName"),
                               theme=request.GET.get("newTableTheme"),
+                              type=request.GET.get("newTableType"),
                               dataZoom_config=request.GET.get("zoomNum"),
                               is_config=False,
                               group_name=ChartGroup.objects.get(group_name=request.GET.get("newTableGroup")),
@@ -230,6 +237,25 @@ def save_Chart(request):
             print err
 
     return HttpResponse(json.dumps(req_post), content_type="application/json")
+
+@csrf_exempt
+def save_Json(request):
+    """保存高级配置"""
+    if request.method == 'POST':
+        try:
+            req = json.loads(request.body)
+            print json.dumps(req["json"])
+            req_post = ''
+            # for i in req:
+            #     req_post[i["name"]] = i["value"]
+            new_table = ChartInfo.objects.get(name=req["chart_name"])
+            new_table.preview_config = json.dumps(req["json"])
+            new_table.save()
+
+        except Exception, err:
+            print err
+
+    return HttpResponse(json.dumps(err), content_type="application/json")
 
 
 @csrf_exempt

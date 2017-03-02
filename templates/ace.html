@@ -21,18 +21,31 @@
     </div>
     </div>
     <div class="row" >
-    <div class="col-sm-6 col-md-6 column col-sm-offset-3" id="jsoneditor" style=" height: 700px;"></div>
+    <div class="col-sm-6 col-md-6 column col-sm-offset-3" id="jsoneditor" style=" height: 600px;"></div>
     </div>
 {#    <div id="dd"><code id="ddd">fewsfsx</code></div>#}
-    <div class="col-sm-6 col-md-6 column col-sm-offset-3"><button class="btn btn-sm btn-info" onclick="getJSON();">保存配置</button></div>
+    <div class="col-sm-1 col-md-1 column col-sm-offset-3"><button class="btn btn-sm btn-info" onclick="saveJSON();">保存配置</button></div>
+    <div class="col-sm-1 col-md-1 column "><a href="doc" target="_blank" >配置手册</a></div>
 </div>
 
 
 <script>
-function getJSON() {
+function saveJSON() {
     var editor_json = editor.get();
-    $("#ddd").text(JSON.stringify(editor_json));
+        $.ajax({
+        url: "saveJson",
+        type: "post",
+        dataType: "json",
+        contentType: "application/json",
+        data: JSON.stringify({"json" : editor_json, "chart_name" : "{{ table_name }}"}),
+        success: function (data) {
+            alert(data);
 
+        },
+        error: function (msg) {
+            alert(msg);
+        }
+    })
 }
   // create the editor
   var container = document.getElementById('jsoneditor');
