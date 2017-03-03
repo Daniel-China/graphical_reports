@@ -1,0 +1,120 @@
+{% extends 'base_temp.html' %}
+
+{% block chart_models_content %}
+{% block chart_models_head %}
+    <script src="/static/js/jquery.uploadifive.min.js"></script>
+    <link href="/static/css/uploadifive.css" rel="stylesheet" type="text/css">
+{% endblock chart_models_head %}
+<div class="container">
+	<div class="row clearfix">
+		<div class="col-md-4 column">
+			 <span class="label label-warning">图表属性</span>
+            </div>
+        	</div>
+
+<div class="row clearfix">
+    <div class="col-sm-1 column ">
+        </div>
+				<div class="col-sm-1 column ">
+					<label for="displayName" class="control-label">图表名称</label>
+
+				</div>
+				<div class="col-sm-2" id="displayName">
+					<code>{{ chart_name }}</code>
+				</div>
+
+
+
+
+</div>
+	<div class="row clearfix">
+        <div class="col-sm-2 column ">
+            <span class="label label-warning">上传csv文件</span>
+        </div>
+    </div>
+    <div class="row clearfix">
+		<div class="col-md-12 column">
+			<form class="form-horizontal" role="form" id="dataSource" action="runSql" method="post">
+
+				<div class="form-group">
+
+					<div class="col-sm-4 col-sm-offset-1">
+						<input type="file" class="form-control" id="file_upload" name="csvfile"/>
+                        <input type="hidden" name="chartName" value="{{ chart_name }}">
+					</div>
+
+
+
+
+
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+<div id="bondingTable">
+
+</div>
+
+
+
+<script type="text/javascript">
+$(function() {
+    $('#file_upload').uploadifive({
+        'onUploadComplete' : function(file, data) {
+             $("#bondingTable").html(data);
+            alert(data + "成功！");
+        },
+        'uploadScript' : 'uploadCSV',
+        'buttossnText': "选择文件",
+        'width': 80,
+        'fileObjName': '{{ chart_name }}',
+        'multi': false,
+        'fileType': '*.csv'
+{#        'formData' : "{{ chart_name }}"#}
+        // Put your options here
+    });
+});
+
+
+
+
+
+
+
+//执行数据源配置
+function runSql(){
+    $.ajax({
+        url: "runSql",
+        type: "post",
+{#        dataType: "json",#}
+{#        contentType: "application/json",#}
+{#        traditional: true,#}
+        data: JSON.stringify($("#dataSource").serializeArray()),
+        success: function (data) {
+            $("#bondingTable").html(data);
+            alert(data + "成功！");
+
+        },
+        error: function (msg) {
+            alert(JSON.stringify($("#dataSource").serializeArray()) + "出错！");
+        }
+    });
+};
+
+//保存配置
+function saveChart(){
+    $.ajax({
+        url: "saveChart",
+        type: "post",
+        data: JSON.stringify($("#bonding").serializeArray()),
+        success: function (data) {
+            alert(JSON.stringify(data) + "成功！");
+        },
+        error: function (msg) {
+            alert(JSON.stringify($("#bonding").serializeArray()) + "出错！");
+        }
+    });
+};
+</script>
+{% endblock chart_models_content %}

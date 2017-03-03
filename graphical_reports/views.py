@@ -7,7 +7,7 @@ from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
 from models import ChartGroup, ChartInfo, ConfigOption, DataSource
 from datetime import date, datetime, timedelta
-import json, MySQLdb, pymysql
+import json, MySQLdb, pymysql, csv
 
 
 class CJsonEncoder(json.JSONEncoder):
@@ -169,13 +169,18 @@ def edit_chart(request):
     '''图表编辑页面'''
     if request.method == 'POST':
         chart_name = request.POST.get("TableName")
+        source_type = request.POST.get("DataSource")
+        if source_type == 'csv':
+            target_page = 'csv_import.html'
+        else:
+            target_page = 'chartEdit.html'
         data_source = DataSource.objects.all()
         data_source_name = []
         for i in data_source:
             data_source_name.append(i.source_name)
 
 
-    return render_to_response('chartEdit.html', locals())
+    return render_to_response(target_page, locals())
 
 
 @csrf_exempt
@@ -217,6 +222,44 @@ def runSql(request):
         pass
 
     return HttpResponse(json.dumps(insert_txt), content_type="application/json")
+
+
+@csrf_exempt
+def upload_CSV(request):
+    """csv上传导入"""
+    if request.method == 'POST':
+        req = request.FILES
+        field_name = ''
+        destination_path = ''
+        try:
+            for field_name in req:
+                uploaded_file = request.FILES[field_name]
+                print uploaded_file.name
+                destination_path = './csv/%s.csv' % (field_name)
+                destination = open(destination_path, 'wb+')
+                for chunk in uploaded_file.chunks():
+                    destination.write(chunk)
+                destination.close()
+
+        except Exception, err:
+            print err
+        with open(destination_path, 'rb') as f:
+            reader = csv.reader(f)
+            rows = [row for row in reader]
+            desc = rows[0]
+            xyaxis = [['x', 'x轴-刻度(分类)'], ['y', 'y轴-图例(数据)']]
+            insert_txt = render_to_response("bondingTable.html", locals()).content
+            new_table = ChartInfo.objects.get(name=field_name)
+
+            new_table.sql_desc = json.dumps(desc)
+            print insert_txt
+
+        return HttpResponse(insert_txt, content_type="application/json")
+    else:
+                # show the upload UI
+        return HttpResponse('错误！', content_type="application/json")
+
+
 
 
 @csrf_exempt
