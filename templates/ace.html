@@ -2,7 +2,7 @@
 {% block chart_models_head %}
     <script src="/static/js/jsoneditor.min.js"></script>
     <script src="/static/js/ace.js"></script>
-    <script src="//cdn.bootcss.com/ace/1.2.6/mode-json.js"></script>
+    <script src="/static/js/mode-json.js"></script>
     <link href="/static/css/jsoneditor.min.css" rel="stylesheet" type="text/css">
     <style type="text/css">
 
@@ -51,7 +51,7 @@ function saveJSON() {
   var container = document.getElementById('jsoneditor');
   var options = {
     modes: ['code', 'tree', 'form'],
-    mode: 'code',
+    mode: 'tree',
     ace: ace
   };
   {% autoescape off %}

@@ -10,6 +10,7 @@ class ChartInfo(models.Model):
     theme = models.CharField(max_length=40)
     name = models.CharField(max_length=100, unique=True, )
     type = models.CharField(max_length=40)
+    source_type = models.CharField(max_length=40)
     is_config = models.BooleanField()
     group_name = models.ForeignKey('ChartGroup')
     sql_exec = models.TextField()

@@ -170,8 +170,13 @@ def edit_chart(request):
     if request.method == 'POST':
         chart_name = request.POST.get("TableName")
         source_type = request.POST.get("DataSource")
+        target_obj = ChartInfo.objects.get(name=chart_name)
+        target_obj.source_type = source_type
+        target_obj.save()
         if source_type == 'csv':
             target_page = 'csv_import.html'
+
+
         else:
             target_page = 'chartEdit.html'
         data_source = DataSource.objects.all()
@@ -194,11 +199,11 @@ def runSql(request):
             for i in req:
                 req_post[i["name"]] = i["value"]
             db_sql = req_post["dbSql"]
-            conn = MySQLdb.Connect(req_post["host"],
-                                   req_post["user"],
-                                   req_post["password"],
-                                   req_post["dbName"],
-                                   int(req_post["port"]),
+            conn = pymysql.connect(host=req_post["host"],
+                                   user=req_post["user"],
+                                   passwd=req_post["password"],
+                                   db=req_post["dbName"],
+                                   port=int(req_post["port"]),
                                    charset='utf8')
             cur = conn.cursor()
             cur.execute(db_sql)
@@ -257,7 +262,7 @@ def upload_CSV(request):
         return HttpResponse(insert_txt, content_type="application/json")
     else:
                 # show the upload UI
-        return HttpResponse('错误！', content_type="application/json")
+        return HttpResponse('错误', content_type="application/json")
 
 
 
@@ -324,6 +329,7 @@ def chart_show(request):
             chart_obj = ChartInfo.objects.get(id=request.GET.get("chart"))
             theme = chart_obj.theme
             chart_json = make_chart_config(chart_obj)
+
     except Exception, err:
         print err
 
@@ -332,26 +338,36 @@ def chart_show(request):
 
 def make_chart_config(chart_obj):
     """合成图表配置json"""
-    chart_config = json.loads(chart_obj.preview_config)
-    # chart_data = json.loads(chart_obj.sql_data)
-    chart_bonding = json.loads(chart_obj.bonding_info)
-    chart_exec = json.loads(chart_obj.sql_exec)
-    try:
-        conn = pymysql.connect(host=chart_exec["host"],
-                               user=chart_exec["user"],
-                               passwd=chart_exec["password"],
-                               db=chart_exec["dbName"],
-                               port=int(chart_exec["port"]),
-                               charset='utf8')
-        cur = conn.cursor()
-        cur.execute(chart_exec["dbSql"])
-        desc = [d[0] for d in cur.description]
-        results_all = cur.fetchall()
-        chart_data = json.loads(json.dumps(dict(zip(desc, zip(*results_all))), cls=CJsonEncoder))
 
-    except Exception, err:
-        print err
+    if chart_obj.source_type == 'mysql':
+        print 'yes'
+        chart_config = json.loads(chart_obj.preview_config)
+        # chart_data = json.loads(chart_obj.sql_data)
+        chart_bonding = json.loads(chart_obj.bonding_info)
+        chart_exec = json.loads(chart_obj.sql_exec)
+        try:
+            conn = pymysql.connect(host=chart_exec["host"],
+                                   user=chart_exec["user"],
+                                   passwd=chart_exec["password"],
+                                   db=chart_exec["dbName"],
+                                   port=int(chart_exec["port"]),
+                                   charset='utf8')
+            cur = conn.cursor()
+            cur.execute(chart_exec["dbSql"])
+            desc = [d[0] for d in cur.description]
+            results_all = cur.fetchall()
+            chart_data = json.loads(json.dumps(dict(zip(desc, zip(*results_all))), cls=CJsonEncoder))
 
+        except Exception, err:
+            print err
+    elif chart_obj.source_type == 'csv':
+        destination_path = './csv/%s.csv' % (chart_obj.name)
+        with open(destination_path, 'rb') as f:
+            reader = csv.reader(f)
+            rows = [row for row in reader]
+            json.loads(json.dumps(dict(zip(rows[0], zip(*rows[1:]))), cls=CJsonEncoder))
+        pass
+    print chart_data
     legend = []
     desc = []
 
@@ -360,7 +376,6 @@ def make_chart_config(chart_obj):
             if chart_bonding[col + '_type'] == 'y':
                 if len(chart_bonding[col + '_display']):
                     legend.append(chart_bonding[col + '_display'])
-
                 else:
                     legend.append(col)
                 desc.append(col)
@@ -376,6 +391,7 @@ def make_chart_config(chart_obj):
 
         chart_config['legend']['data'] = legend
         pre_series = chart_config['series'][0]
+        pre_series['type'] = chart_obj.type
         chart_config['series'] = [col for col in desc]
         series = []
 
@@ -392,5 +408,6 @@ def make_chart_config(chart_obj):
 
     except Exception, err:
         print err
+    print chart_config['series']
     print chart_config['dataZoom']
     return json.dumps(chart_config)
