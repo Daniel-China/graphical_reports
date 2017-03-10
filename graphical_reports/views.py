@@ -328,6 +328,7 @@ def chart_show(request):
         elif request.GET.get("chart"):
             chart_obj = ChartInfo.objects.get(id=request.GET.get("chart"))
             theme = chart_obj.theme
+
             chart_json = make_chart_config(chart_obj)
 
     except Exception, err:
@@ -338,10 +339,10 @@ def chart_show(request):
 
 def make_chart_config(chart_obj):
     """合成图表配置json"""
-
+    chart_config = json.loads(chart_obj.preview_config)
     if chart_obj.source_type == 'mysql':
-        print 'yes'
-        chart_config = json.loads(chart_obj.preview_config)
+        print chart_obj.type
+
         # chart_data = json.loads(chart_obj.sql_data)
         chart_bonding = json.loads(chart_obj.bonding_info)
         chart_exec = json.loads(chart_obj.sql_exec)
@@ -365,49 +366,65 @@ def make_chart_config(chart_obj):
         with open(destination_path, 'rb') as f:
             reader = csv.reader(f)
             rows = [row for row in reader]
-            json.loads(json.dumps(dict(zip(rows[0], zip(*rows[1:]))), cls=CJsonEncoder))
-        pass
-    print chart_data
-    legend = []
-    desc = []
-
-    try:
-        for col in json.loads(chart_obj.sql_desc):
-            if chart_bonding[col + '_type'] == 'y':
-                if len(chart_bonding[col + '_display']):
-                    legend.append(chart_bonding[col + '_display'])
-                else:
-                    legend.append(col)
-                desc.append(col)
-            elif chart_bonding[col + '_type'] == 'x':
-                chart_config['xAxis'][0]['data'] = chart_data[col]
-                chart_config['xAxis'][0]['name'] = chart_bonding[col + '_display']
-                chart_config['dataZoom'][0]['endValue'] = len(chart_data[col])
-                if int(chart_obj.dataZoom_config) >= len(chart_data[col]):
-                    chart_config['dataZoom'][0]['startValue'] = 0
-                else:
-                    chart_config['dataZoom'][0]['startValue'] = len(chart_data[col]) - int(chart_obj.dataZoom_config)
-                    print chart_config['dataZoom'][0]['startValue'], chart_config['dataZoom'][0]['endValue']
-
-        chart_config['legend']['data'] = legend
-        pre_series = chart_config['series'][0]
-        pre_series['type'] = chart_obj.type
-        chart_config['series'] = [col for col in desc]
-        series = []
-
-        for i, col in enumerate(desc):
-            pre = pre_series
-            pre['name'] = chart_bonding[col + '_display']
-            pre['stack'] = chart_bonding[col + '_display']
-            pre['data'] = chart_data[col]
-            # print json.dumps(pre)
-            series.append(json.dumps(pre))
-            # print series
-        chart_config['series'] = [json.loads(col) for col in series]
+            desc = rows[0]
+            results_all = rows[1:]
+            chart_data = json.loads(json.dumps(dict(zip(desc, zip(*results_all))), cls=CJsonEncoder))
 
 
-    except Exception, err:
-        print err
-    print chart_config['series']
-    print chart_config['dataZoom']
-    return json.dumps(chart_config)
+    if chart_obj.type == 'line' or chart_obj.type == 'bar':
+        try:
+            legend = []
+            desc = []
+            for col in json.loads(chart_obj.sql_desc):
+                if chart_bonding[col + '_type'] == 'y':
+                    if len(chart_bonding[col + '_display']):
+                        legend.append(chart_bonding[col + '_display'])
+                    else:
+                        legend.append(col)
+                    desc.append(col)
+                elif chart_bonding[col + '_type'] == 'x':
+                    chart_config['xAxis'][0]['data'] = chart_data[col]
+                    chart_config['xAxis'][0]['name'] = chart_bonding[col + '_display']
+                    chart_config['dataZoom'][0]['endValue'] = len(chart_data[col])
+                    if int(chart_obj.dataZoom_config) >= len(chart_data[col]):
+                        chart_config['dataZoom'][0]['startValue'] = 0
+                    else:
+                        chart_config['dataZoom'][0]['startValue'] = len(chart_data[col]) - int(chart_obj.dataZoom_config)
+
+
+            chart_config['legend']['data'] = legend
+            pre_series = chart_config['series'][0]
+            pre_series['type'] = chart_obj.type
+            chart_config['series'] = [col for col in desc]
+            series = []
+
+            for i, col in enumerate(desc):
+                pre = pre_series
+                pre['name'] = chart_bonding[col + '_display']
+                pre['stack'] = chart_bonding[col + '_display']
+                pre['data'] = chart_data[col]
+                # print json.dumps(pre)
+                series.append(json.dumps(pre))
+                # print series
+            chart_config['series'] = [json.loads(col) for col in series]
+        except Exception, err:
+            print err
+
+    elif chart_obj.type == 'pie':
+        try:
+            del chart_config['xAxis']
+            del chart_config['yAxis']
+            del chart_config['dataZoom']
+            chart_config['legend']['data'] = zip(*results_all)[0]
+            pre_series = {}
+            pre_series['type'] = 'pie'
+            pre_series['data'] = []
+            for kv in results_all:
+                option = {'name': kv[0], 'value': kv[1]}
+                pre_series['data'].append(option)
+            print json.dumps(pre_series, cls=CJsonEncoder)
+            chart_config['series']=[json.loads(json.dumps(pre_series, cls=CJsonEncoder)),]
+        except Exception, err:
+            print err
+    print json.dumps(chart_config, cls=CJsonEncoder )
+    return json.dumps(chart_config, cls=CJsonEncoder )
