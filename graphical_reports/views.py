@@ -316,7 +316,7 @@ def chart_dir(request):
         if Chart.is_config:
             charts.append(Chart)
 
-    return render_to_response('chartDir.html', locals())
+    return render_to_response('chartDir1.html', locals())
 
 
 @csrf_exempt
@@ -328,13 +328,17 @@ def chart_show(request):
         elif request.GET.get("chart"):
             chart_obj = ChartInfo.objects.get(id=request.GET.get("chart"))
             theme = chart_obj.theme
-
-            chart_json = make_chart_config(chart_obj)
+            res = make_chart_config(chart_obj)
+            chart_json = res[0]
+            chart_data = res[1]
+            if request.GET.get("type")== 'chart':
+                return render(request, 'chartViews.html', locals())
+            elif request.GET.get("type")== 'table':
+                return render(request, 'tableViews.html', locals())
 
     except Exception, err:
         print err
 
-    return render(request, 'chartViews.html', locals())
 
 
 def make_chart_config(chart_obj):
@@ -427,4 +431,4 @@ def make_chart_config(chart_obj):
         except Exception, err:
             print err
     print json.dumps(chart_config, cls=CJsonEncoder )
-    return json.dumps(chart_config, cls=CJsonEncoder )
+    return [json.dumps(chart_config, cls=CJsonEncoder ), chart_data]
