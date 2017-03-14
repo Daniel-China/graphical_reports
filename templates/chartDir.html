@@ -2,18 +2,22 @@
 
 {% block chart_models_content %}
 
-<div class="container" >
+<div class="container-fluid" >
 	<div class="row clearfix">
 		<div class="col-md-6 column">
+
 			 <span class="label label-default">分组显示</span>
-		</div>
+            </div>
+
 		<div class="col-md-6 column">
 		</div>
 	</div>
 	<div class="row clearfix">
         {% for group in groups %}
 		<div class="col-md-3 col-sm-6 column">
-            <a class="btn btn-sm btn-block btn-primary " role="button" href="chartShow?group={{ group.id }}" >{{ group.group_name }}</a>
+            <div class="well well-sm">
+                <a class="btn btn-sm btn-block btn-default " role="button" href="chartShow?group={{ group.id }}" >{{ group.group_name }}</a>
+            </div>
         </div>
         {% endfor %}
 
@@ -27,9 +31,13 @@
 	</div>
 	<div class="row clearfix">
         {% for chart in charts %}
-		<div class="col-md-3 col-sm-6 column">
-            <a class="btn btn-sm btn-block btn-primary " role="button" href="chartShow?chart={{ chart.id }}" >{{ chart.name }}</a>
+<div class="col-md-4 col-sm-6 column">
+        <div class="well well-sm">
 
+            <a class="btn btn-sm btn-default disabled" role="button"  ><code>{{ chart.name }}</code></a>
+            <a class="btn btn-sm btn-primary pull-right" role="button" href="chartShow?chart={{ chart.id }}&type=chart" ><span class="glyphicon  {% if chart.type == "bar" %}glyphicon-stats{% elif chart.type == "line" %}glyphicon-random{% elif chart.type == "pie" %}glyphicon-adjust{% endif %}"></span>  图表</a>
+            <a class="btn btn-sm btn-info pull-right" role="button" href="chartShow?chart={{ chart.id }}&type=table" ><span class="glyphicon glyphicon-list"></span>  数据</a>
+        </div>
         </div>
         {% endfor %}
 

@@ -316,7 +316,7 @@ def chart_dir(request):
         if Chart.is_config:
             charts.append(Chart)
 
-    return render_to_response('chartDir1.html', locals())
+    return render_to_response('chartDir.html', locals())
 
 
 @csrf_exempt

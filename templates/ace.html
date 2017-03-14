@@ -16,16 +16,20 @@
 {% block chart_models_content %}
 <div class="container">
     <div class="row" >
-    <div class="col-sm-4 col-sm-offset-4  label label-warning">
-        <label for="jsoneditor" class="control-label">高级属性修改：{{ table_name }}</label>
+    <div class="col-sm-4 col-sm-offset-3 ">
+        <div class="well well-sm">
+        <h5>高级属性修改：<code>{{ table_name }}</code></h5>
+            </div>
     </div>
     </div>
     <div class="row" >
     <div class="col-sm-6 col-md-6 column col-sm-offset-3" id="jsoneditor" style=" height: 600px;"></div>
     </div>
 {#    <div id="dd"><code id="ddd">fewsfsx</code></div>#}
-    <div class="col-sm-1 col-md-1 column col-sm-offset-3"><button class="btn btn-sm btn-info" onclick="saveJSON();">保存配置</button></div>
-    <div class="col-sm-1 col-md-1 column "><a href="doc" target="_blank" >配置手册</a></div>
+
+    <div class="col-sm-3 col-md-3 column col-sm-offset-3"><div class="well well-sm"><button class="btn btn-sm btn-primary " onclick="saveJSON();">保存配置</button> <a class="btn btn-sm btn-info pull-right" role="button" href="doc" target="_blank" >配置手册</a></div></div>
+
+
 </div>
 
 
