@@ -11,20 +11,32 @@
 		</div>
 	</div>
 	<div class="row clearfix">
-		<div class="col-md-3 col-sm-6 column">
-            <button type="button" class="btn btn-sm btn-block btn-primary" href="#modal-new-table" data-toggle="modal" onclick="getOptions()" >新建图表</button>
 
+
+		<div class="col-md-3 col-sm-6 column">
+            <div class="well well-sm">
+            <button type="button" class="btn btn-sm btn-block btn-primary" href="#modal-new-table" data-toggle="modal" onclick="getOptions()" >新建图表</button>
+            </div>
         </div>
 
 		<div class="col-md-3 col-sm-6 column">
+            <div class="well well-sm">
             <button type="button" class="btn btn-sm btn-block btn-primary" href="#modal-edit-table" data-toggle="modal" onclick="getEditOptions()">编辑图表</button>
-		</div>
+		    </div>
+        </div>
 		<div class="col-md-3 col-sm-6 column">
+            <div class="well well-sm">
             <button type="button" class="btn btn-sm btn-block btn-primary" href="#modal-del-table" data-toggle="modal" onclick="getDelOptions()">删除图表</button>
-		</div>
+		    </div>
+        </div>
 		<div class="col-md-3 col-sm-6 column">
-            <button type="button" class="btn btn-sm btn-block btn-primary" href="#modal-ext-table" data-toggle="modal" onclick="getExtOptions()">高级配置</button>
-		</div>
+            <div class="well well-sm">
+
+                <button type="button" class="btn btn-sm btn-block btn-primary" href="#modal-ext-table" data-toggle="modal" onclick="getExtOptions()">高级配置</button>
+		    </div>
+        </div>
+
+
 	</div>
     <div class="row clearfix">
 		<div class="col-md-6 column">
@@ -35,37 +47,43 @@
 	</div>
 	<div class="row clearfix">
 		<div class="col-md-3 col-sm-6 column">
+            <div class="well well-sm">
 			 <button type="button" class="btn btn-sm btn-block btn-primary">新建分组</button>
+            </div>
 		</div>
 		<div class="col-md-3 col-sm-6 column">
+            <div class="well well-sm">
             <button type="button" class="btn btn-sm btn-block btn-primary">编辑分组</button>
+            </div>
 		</div>
 		<div class="col-md-3 col-sm-6 column">
+            <div class="well well-sm">
             <button type="button" class="btn btn-sm btn-block btn-primary">删除分组</button>
+            </div>
 		</div>
 		<div class="col-md-3 col-sm-6 column">
 
 		</div>
 	</div>
-	<div class="row clearfix">
-		<div class="col-md-6 column">
-            <span class="label label-default">图表展示管理</span>
-		</div>
-		<div class="col-md-6 column">
-		</div>
-	</div>
-	<div class="row clearfix">
-		<div class="col-md-3 col-sm-6 col-sm-6 column">
-            <button type="button" class="btn btn-sm btn-block btn-primary">设置组图</button>
-		</div>
-		<div class="col-md-3 col-sm-6 column">
-            <button type="button" class="btn btn-sm btn-block btn-primary">设置单表</button>
-		</div>
-		<div class="col-md-3 col-sm-6 column">
-		</div>
-		<div class="col-md-3 col-sm-6 column">
-		</div>
-	</div>
+{#	<div class="row clearfix">#}
+{#		<div class="col-md-6 column">#}
+{#            <span class="label label-default">图表展示管理</span>#}
+{#		</div>#}
+{#		<div class="col-md-6 column">#}
+{#		</div>#}
+{#	</div>#}
+{#	<div class="row clearfix">#}
+{#		<div class="col-md-3 col-sm-6 col-sm-6 column">#}
+{#            <button type="button" class="btn btn-sm btn-block btn-primary">设置组图</button>#}
+{#		</div>#}
+{#		<div class="col-md-3 col-sm-6 column">#}
+{#            <button type="button" class="btn btn-sm btn-block btn-primary">设置单表</button>#}
+{#		</div>#}
+{#		<div class="col-md-3 col-sm-6 column">#}
+{#		</div>#}
+{#		<div class="col-md-3 col-sm-6 column">#}
+{#		</div>#}
+{#	</div>#}
 </div>
 <div id="alert">
 {#    <div class="alert alert-dismissable alert-success navbar-fixed-bottom">#}
@@ -118,7 +136,7 @@
                     </div>
                     <div class="form-group">
                         <div>
-                            <label for="input-zoom-num">默认显示的数量:</label>
+                            <label for="input-zoom-num">默认显示数据笔数:</label>
                         </div>
                         <div>
                             <input type="text" class="form-control" name="zoomNum" id="input-zoom-num"  />

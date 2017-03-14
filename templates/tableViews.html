@@ -1,40 +1,43 @@
 {% extends 'base_temp.html' %}
 
 {% block chart_models_head %}
-    <script src="/static/css/bootstrap-table.min.css"></script>
-    <script src="/static/js/bootstrap-table.min.js"></script>
-{#    <script src="/static/js/bootstrap-table-zh-CN.min.js"></script>#}
+{#    <script src="/static/css/bootstrap-table.min.css"></script>#}
+{#    <script src="/static/js/bootstrap-table.min.js"></script>#}
+{#  <script src="/static/js/bootstrap-table-zh-CN.min.js"></script>#}
 {% endblock chart_models_head %}
 
 
 {% block chart_models_content %}
      <div class="container">
-        <h1>Custom Sort</h1>
-        <p>Use <code>sorter</code> column option to define the custom sort of bootstrap table.</p>
-        <table id="table"
-               data-toggle="table"
-               data-height="460"
-               data-url="../json/data1.json"
-               data-sort-name="price"
-               data-sort-order="desc">
-            <thead>
+        <h2>数据查看：</h2>
+        <h3> <code>{{ chart_obj.name }}</code> </h3>
+ <table class="table table-bordered">
+        <thead>
             <tr>
-                <th data-field="id" data-sortable="true">Item ID</th>
-                <th data-field="name" data-sortable="true">Item Name</th>
-                <th data-field="price" data-sortable="true" data-sorter="priceSorter">Item Price</th>
+                {% for col in desc_data %}
+                <th>
+                    {{ col }}
+                </th>
+                {% endfor %}
+
             </tr>
-            </thead>
-        </table>
+        </thead>
+        <tbody>
+        {% for col in table_data %}
+            <tr class="success">
+                {% for td in col %}
+                <td>
+                    {{ td }}
+                </td>
+                {% endfor %}
+
+            </tr>
+        {% endfor %}
+
+        </tbody>
+    </table>
     </div>
-<script>
-    function priceSorter(a, b) {
-        a = +a.substring(1); // remove $
-        b = +b.substring(1);
-        if (a > b) return 1;
-        if (a < b) return -1;
-        return 0;
-    }
-</script>
+
 
 
 {% endblock chart_models_content %}

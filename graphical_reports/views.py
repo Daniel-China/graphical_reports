@@ -328,9 +328,14 @@ def chart_show(request):
         elif request.GET.get("chart"):
             chart_obj = ChartInfo.objects.get(id=request.GET.get("chart"))
             theme = chart_obj.theme
+
             res = make_chart_config(chart_obj)
+
             chart_json = res[0]
-            chart_data = res[1]
+            desc_data = res[1]
+            table_data = res[2]
+            chart_types = ["bar", "line", "pie"]
+
             if request.GET.get("type")== 'chart':
                 return render(request, 'chartViews.html', locals())
             elif request.GET.get("type")== 'table':
@@ -345,7 +350,7 @@ def make_chart_config(chart_obj):
     """合成图表配置json"""
     chart_config = json.loads(chart_obj.preview_config)
     if chart_obj.source_type == 'mysql':
-        print chart_obj.type
+
 
         # chart_data = json.loads(chart_obj.sql_data)
         chart_bonding = json.loads(chart_obj.bonding_info)
@@ -359,9 +364,10 @@ def make_chart_config(chart_obj):
                                    charset='utf8')
             cur = conn.cursor()
             cur.execute(chart_exec["dbSql"])
-            desc = [d[0] for d in cur.description]
+            desc_data = [d[0] for d in cur.description]
             results_all = cur.fetchall()
-            chart_data = json.loads(json.dumps(dict(zip(desc, zip(*results_all))), cls=CJsonEncoder))
+            chart_data = json.loads(json.dumps(dict(zip(desc_data, zip(*results_all))), cls=CJsonEncoder))
+            table_data = json.loads(json.dumps(results_all, cls=CJsonEncoder))
 
         except Exception, err:
             print err
@@ -370,10 +376,10 @@ def make_chart_config(chart_obj):
         with open(destination_path, 'rb') as f:
             reader = csv.reader(f)
             rows = [row for row in reader]
-            desc = rows[0]
+            desc_data = rows[0]
             results_all = rows[1:]
-            chart_data = json.loads(json.dumps(dict(zip(desc, zip(*results_all))), cls=CJsonEncoder))
-
+            chart_data = json.loads(json.dumps(dict(zip(desc_data, zip(*results_all))), cls=CJsonEncoder))
+            table_data = json.loads(json.dumps(results_all, cls=CJsonEncoder))
 
     if chart_obj.type == 'line' or chart_obj.type == 'bar':
         try:
@@ -426,9 +432,9 @@ def make_chart_config(chart_obj):
             for kv in results_all:
                 option = {'name': kv[0], 'value': kv[1]}
                 pre_series['data'].append(option)
-            print json.dumps(pre_series, cls=CJsonEncoder)
+            #print json.dumps(pre_series, cls=CJsonEncoder)
             chart_config['series']=[json.loads(json.dumps(pre_series, cls=CJsonEncoder)),]
         except Exception, err:
             print err
-    print json.dumps(chart_config, cls=CJsonEncoder )
-    return [json.dumps(chart_config, cls=CJsonEncoder ), chart_data]
+    #print json.dumps(chart_config, cls=CJsonEncoder )
+    return [json.dumps(chart_config, cls=CJsonEncoder ), desc_data, table_data]
