@@ -59,6 +59,7 @@
 
 
 <script type="text/javascript">
+//文件上传控件
 $(function() {
     $('#file_upload').uploadifive({
         'onUploadComplete' : function(file, data) {
@@ -93,7 +94,7 @@ function runSql(){
         data: JSON.stringify($("#dataSource").serializeArray()),
         success: function (data) {
             $("#bondingTable").html(data);
-            alert(data + "成功！");
+            alert( "成功！");
 
         },
         error: function (msg) {

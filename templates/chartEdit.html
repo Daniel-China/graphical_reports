@@ -19,12 +19,23 @@
 				<div class="col-sm-2" id="displayName">
 					<code>{{ chart_name }}</code>
 				</div>
-                <div class="col-sm-2 column ">
-					<label for="displayName" class="control-label">数据源选择（可选）：</label>
+
+
+
+	</div>
+	<div class="row clearfix">
+        <div class="col-sm-2 column ">
+            <span class="label label-warning">数据源选择</span>
+        </div>
+    </div>
+<div class="col-sm-12 col-md-12">
+    <div class="row clearfix well">
+                <div class="col-sm-2 col-md-2 ">
+					<label for="displayName" class="control-label">数据源选择(可选)：</label>
 
 				</div>
-                <div class="col-sm-2 column control-label">
-                    <select onchange="Change()" id="sel">
+                <div class="col-sm-2 col-md-2  ">
+                    <select onchange="Change()" id="sel" class="form-control">
                         <option></option>
                         {% for sourcename in data_source_name %}
                         <option>{{ sourcename }}</option>
@@ -33,8 +44,11 @@
                     </select>
                 </div>
 
-
-	</div>
+                <div class="col-sm-2 col-md-2">
+                    <button type="button" class="btn btn-sm btn-primary pull-right" href="#modal-config-table" data-toggle="modal" >数据源保存为配置</button>
+                </div>
+    </div>
+</div>
 	<div class="row clearfix">
         <div class="col-sm-2 column ">
             <span class="label label-warning">数据源设置</span>
@@ -42,6 +56,7 @@
     </div>
     <div class="row clearfix">
 		<div class="col-md-12 column">
+            <div class="well ">
 			<form class="form-horizontal" role="form" id="dataSource" action="runSql" method="post">
 
 				<div class="form-group">
@@ -82,15 +97,55 @@
 				</div>
                 <div class="col-sm-offset-2 col-sm-8">
                     <button type="button" class="btn btn-sm btn-primary" onclick="runSql()" >执行测试</button>
+
+
                 </div>
 				</div>
 			</form>
+            </div>
 		</div>
 	</div>
 </div>
 <div id="bondingTable">
 
 </div>
+
+
+{# 数据源配置保存弹窗#}
+<div class="modal fade" id="modal-config-table" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title" >
+                    保存数据源为配置
+                </h4>
+            </div>
+            <div class="modal-body">
+                <form role="form" method="post" id="extTable" action="extEditChart">
+                    <div class="form-group">
+                        <div>
+                            <label for="input-config-name" class="control-label">输入配置命名:</label>
+                        </div>
+                        <div>
+                            <input type="text"  name="configName" id="input-config-name"  maxlength="40" class="form-control" placeholder="^" />
+                        </div>
+                    </div>
+
+
+
+
+
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                 <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button> <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="FSubmit('#extTable')">确认</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 
 
@@ -132,7 +187,7 @@ function runSql(){
         data: JSON.stringify($("#dataSource").serializeArray()),
         success: function (data) {
             $("#bondingTable").html(data);
-            alert(data + "成功！");
+            alert( "成功！");
 
         },
         error: function (msg) {
