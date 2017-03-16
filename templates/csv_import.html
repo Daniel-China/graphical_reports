@@ -64,7 +64,7 @@ $(function() {
     $('#file_upload').uploadifive({
         'onUploadComplete' : function(file, data) {
              $("#bondingTable").html(data);
-            alert(data + "成功！");
+            alert( "成功！");
         },
         'uploadScript' : 'uploadCSV',
         'buttossnText': "选择文件",
@@ -110,7 +110,7 @@ function saveChart(){
         type: "post",
         data: JSON.stringify($("#bonding").serializeArray()),
         success: function (data) {
-            alert(JSON.stringify(data) + "成功！");
+            alert( "成功！");
         },
         error: function (msg) {
             alert(JSON.stringify($("#bonding").serializeArray()) + "出错！");

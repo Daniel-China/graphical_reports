@@ -117,11 +117,11 @@ def del_chart(request):
     if table_name == req_post['confirmTableName']:
         try:
             ChartInfo.objects.filter(name=table_name).delete()
-            res = "删除"
+            res = "删除成功"
         except Exception, err:
             print err
     else:
-        res = "删除不"
+        res = "名称不匹配"
 
     return HttpResponse(json.dumps(res), content_type="application/json")
 
@@ -208,14 +208,15 @@ def runSql(request):
             cur = conn.cursor()
             cur.execute(db_sql)
             desc = [d[0] for d in cur.description]
-            xyaxis = [['x', 'x轴-刻度'], ['y', 'y轴-图例']]
-            print desc
-            insert_txt = render_to_response("bondingTable.html", locals()).content
+            xyaxis = [['x', 'x轴-刻度(分类)'], ['y', 'y轴-图例(数据)']]
+
+
             new_table = ChartInfo.objects.get(name=req_post["chartName"])
             new_table.sql_exec = json.dumps(req_post)
             new_table.sql_desc = json.dumps(desc)
             # new_table.sql_data = json.dumps(dict(zip(desc, zip(*cur.fetchall()))), cls=CJsonEncoder)
             new_table.save()
+            insert_txt = render_to_response("bondingTable.html", locals()).content
             """保存查询结果的字段和数据"""
 
             cur.close()
@@ -253,11 +254,12 @@ def upload_CSV(request):
             rows = [row for row in reader]
             desc = rows[0]
             xyaxis = [['x', 'x轴-刻度(分类)'], ['y', 'y轴-图例(数据)']]
-            insert_txt = render_to_response("bondingTable.html", locals()).content
-            new_table = ChartInfo.objects.get(name=field_name)
 
+            new_table = ChartInfo.objects.get(name=field_name)
             new_table.sql_desc = json.dumps(desc)
-            print insert_txt
+            new_table.save()
+            insert_txt = render_to_response("bondingTable.html", locals()).content
+
 
         return HttpResponse(insert_txt, content_type="application/json")
     else:
@@ -353,7 +355,7 @@ def make_chart_config(chart_obj):
 
 
         # chart_data = json.loads(chart_obj.sql_data)
-        chart_bonding = json.loads(chart_obj.bonding_info)
+
         chart_exec = json.loads(chart_obj.sql_exec)
         try:
             conn = pymysql.connect(host=chart_exec["host"],
@@ -382,6 +384,7 @@ def make_chart_config(chart_obj):
             table_data = json.loads(json.dumps(results_all, cls=CJsonEncoder))
 
     if chart_obj.type == 'line' or chart_obj.type == 'bar':
+        chart_bonding = json.loads(chart_obj.bonding_info)
         try:
             legend = []
             desc = []

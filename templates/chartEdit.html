@@ -44,9 +44,9 @@
                     </select>
                 </div>
 
-                <div class="col-sm-2 col-md-2">
-                    <button type="button" class="btn btn-sm btn-primary pull-right" href="#modal-config-table" data-toggle="modal" >数据源保存为配置</button>
-                </div>
+{#                <div class="col-sm-2 col-md-2">#}
+{#                    <button type="button" class="btn btn-sm btn-primary pull-right" href="#modal-config-table" data-toggle="modal" >数据源保存为配置</button>#}
+{#                </div>#}
     </div>
 </div>
 	<div class="row clearfix">
@@ -128,7 +128,10 @@
                             <label for="input-config-name" class="control-label">输入配置命名:</label>
                         </div>
                         <div>
-                            <input type="text"  name="configName" id="input-config-name"  maxlength="40" class="form-control" placeholder="^" />
+                            <input type="text"  name="configName" id="input-config-name"  maxlength="40" class="form-control" placeholder="^" onchange="checkConfigName()" />
+                        </div>
+                        <div>
+                            <p id="checkName"></p>
                         </div>
                     </div>
 
@@ -173,7 +176,12 @@ function Change(){
     });
 };
 
+//检查输入的名称
+function checkConfigName(){
+    var dd = $("#input-config-name").val();
+    $("#checkName").html(dd);
 
+}
 
 
 //执行数据源配置
@@ -203,10 +211,12 @@ function saveChart(){
         type: "post",
         data: JSON.stringify($("#bonding").serializeArray()),
         success: function (data) {
-            alert(JSON.stringify(data) + "成功！");
+           // alert(JSON.stringify(data) + "成功！");
+             alert( "成功！");
         },
         error: function (msg) {
-            alert(JSON.stringify($("#bonding").serializeArray()) + "出错！");
+           // alert(JSON.stringify($("#bonding").serializeArray()) + "出错！");
+             alert("出错！");
         }
     });
 };

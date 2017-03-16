@@ -370,7 +370,7 @@ function postJsonForm(url,uuid) {
 {#                traditional: true,#}
         data: JSON.stringify($(obj).serializeArray()),
         success: function (data) {
-            optionstring = '<div class="alert alert-dismissable alert-success navbar-fixed-bottom"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button><h4>成功!</h4><a>成功删除</a><strong>' + data + '</strong></div>';
+            optionstring = '<div class="alert alert-dismissable alert-success navbar-fixed-bottom"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button><strong>' + data + '</strong></div>';
 
             $("#alert").html(optionstring);
 
