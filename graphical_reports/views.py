@@ -7,8 +7,9 @@ from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
 from models import ChartGroup, ChartInfo, ConfigOption, DataSource
 from datetime import date, datetime, timedelta
-import json, MySQLdb, pymysql, csv
-
+import json, MySQLdb, pymysql, csv, sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
 
 class CJsonEncoder(json.JSONEncoder):
     """Json的子类，用于转换date或者datetime类型的数据"""
@@ -34,6 +35,9 @@ def offline_api(request):
 
 def offline_doc(request):
     return render_to_response('echarts-doc-offline/option.html', locals())
+
+def map_test(request):
+    return render_to_response('map_test.html', locals())
 
 
 @never_cache
@@ -346,11 +350,34 @@ def chart_show(request):
     except Exception, err:
         print err
 
+@csrf_exempt
+def get_CSV(request):
+    """数据导出"""
+    try:
+        chart_obj = ChartInfo.objects.get(id=request.GET.get("id"))
+        res = make_chart_config(chart_obj)
+        desc_data = res[1]
+        table_data = res[2]
+        response = HttpResponse(mimetype='text/csv')
+        response['Content-Disposition'] = 'attachment; filename=%s.csv' % chart_obj.name.encode("utf-8")
+        print response['Content-Disposition']
+
+        # Create the CSV writer using the HttpResponse as the "file."
+        writer = csv.writer(response)
+        writer.writerow(desc_data)
+        for row in table_data:
+            writer.writerow(row)
+        return response
+    except Exception, err:
+        print err
+
+
 
 
 def make_chart_config(chart_obj):
     """合成图表配置json"""
     chart_config = json.loads(chart_obj.preview_config)
+    chart_bonding = json.loads(chart_obj.bonding_info)
     if chart_obj.source_type == 'mysql':
 
 
@@ -384,7 +411,7 @@ def make_chart_config(chart_obj):
             table_data = json.loads(json.dumps(results_all, cls=CJsonEncoder))
 
     if chart_obj.type == 'line' or chart_obj.type == 'bar':
-        chart_bonding = json.loads(chart_obj.bonding_info)
+
         try:
             legend = []
             desc = []
@@ -395,6 +422,7 @@ def make_chart_config(chart_obj):
                     else:
                         legend.append(col)
                     desc.append(col)
+
                 elif chart_bonding[col + '_type'] == 'x':
                     chart_config['xAxis'][0]['data'] = chart_data[col]
                     chart_config['xAxis'][0]['name'] = chart_bonding[col + '_display']
@@ -407,14 +435,16 @@ def make_chart_config(chart_obj):
 
             chart_config['legend']['data'] = legend
             pre_series = chart_config['series'][0]
+
             pre_series['type'] = chart_obj.type
             chart_config['series'] = [col for col in desc]
             series = []
 
             for i, col in enumerate(desc):
                 pre = pre_series
-                pre['name'] = chart_bonding[col + '_display']
-                pre['stack'] = chart_bonding[col + '_display']
+                pre['name'] = legend[i]
+                # pre['name'] = chart_bonding[col + '_display']
+                pre['stack'] = legend[i]
                 pre['data'] = chart_data[col]
                 # print json.dumps(pre)
                 series.append(json.dumps(pre))
@@ -423,14 +453,23 @@ def make_chart_config(chart_obj):
         except Exception, err:
             print err
 
-    elif chart_obj.type == 'pie':
+    elif chart_obj.type == 'pie' or chart_obj.type == 'map':
         try:
             del chart_config['xAxis']
             del chart_config['yAxis']
             del chart_config['dataZoom']
-            chart_config['legend']['data'] = zip(*results_all)[0]
             pre_series = {}
-            pre_series['type'] = 'pie'
+            if chart_obj.type == 'pie':
+                pre_series['label'] = {"normal": {"formatter": "{b}: {c} ({d}%)"}}
+
+                chart_config['legend']['data'] = zip(*results_all)[0]
+            elif chart_obj.type == 'map':
+                pre_series['label'] = {"normal": {"show": False},"emphasis": {"show": True}}
+                chart_config['visualMap'] = {"calculable": True, "min": 0 , "max": max(map(int,chart_data[json.loads(chart_obj.sql_desc)[-1]]))}
+                chart_config['legend']['data'] = chart_bonding[json.loads(chart_obj.sql_desc)[-1] + '_display']
+
+            pre_series['type'] = chart_obj.type
+            pre_series['map'] = 'china'
             pre_series['data'] = []
             for kv in results_all:
                 option = {'name': kv[0], 'value': kv[1]}
